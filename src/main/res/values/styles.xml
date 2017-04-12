@@ -1,0 +1,12 @@
+<resources>
+    <!-- Base application theme -->
+    <style name="Horchat" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+    <style name="Horchat.ActionBar" parent="Theme.AppCompat.Light">
+    </style>
+    <style name="Horchat.ActionBar.Popup" parent="ThemeOverlay.AppCompat.Light">
+    </style>
+
+</resources>

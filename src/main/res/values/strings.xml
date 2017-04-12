@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Horchat</string>
+    <!-- Toolbar -->
+    <string name="toolbar_search">Search</string>
+    <string name="toolbar_dropdown">Menu</string>
+    <!-- Dropdown menu -->
+    <string name="dropdown_settings">Settings</string>
+    <!-- Placeholders (to be replaced) -->
+    <string name="placeholder_title">_TITLE_</string>
+    <string name="placeholder_username">_USERNAME_</string>
+</resources>
