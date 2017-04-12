@@ -60,7 +60,9 @@ class DatabaseHelper extends SQLiteOpenHelper {
     private Settings getSettings(SQLiteDatabase db) {
         String tuples[] = {"key", "value"};
         Cursor cursor = db.query(TABLE_SETTINGS, tuples, null, null, null, null, null, null);
-        return new Settings(cursor);
+        Settings settings = new Settings(cursor);
+        cursor.close();
+        return settings;
     }
     public String getSetting(String key) {
         String value = null;
@@ -101,6 +103,7 @@ class DatabaseHelper extends SQLiteOpenHelper {
                 // Search for the current session
                 Cursor cursor = db.query(TABLE_ACCOUNTS, tuples, "_id = '" + currentAccount + "'", null, null, null, null, null);
                 account = new Account(currentAccount, cursor);
+                cursor.close();
             }
         }
         db.close();

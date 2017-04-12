@@ -20,7 +20,14 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String ID = "horchat";
 
-    private static final String ACCOUNT_ID = "account_id";
+    public static final String SERVER_HOST = "serverHost";
+    public static final String SERVER_PORT = "serverPort";
+    public static final String SERVER_USERNAME = "username";
+    public static final String USER_NICKNAME = "nickname";
+    public static final String USER_PASSWORD = "password";
+    public static final String USER_REALNAME = "realName";
+    /* TODO: Remove */
+    public static final String TODO_IS_LOGGED_IN = "isLoggedIn";
 
     private Account account;
     private DatabaseHelper db;
@@ -55,7 +62,9 @@ public class MainActivity extends AppCompatActivity {
         }
         // Configure the user account
         account = db.getCurrentAccount();
-        if (account == null) {
+        /* TODO: Uncomment this */
+        //if (account == null) {
+        if (extras == null || extras.getBoolean(TODO_IS_LOGGED_IN) != true) {
             // The user has not logged in yet, go to server connection activity
             Intent activityIntent = new Intent(this, ConnectToServerActivity.class);
             startActivity(activityIntent);

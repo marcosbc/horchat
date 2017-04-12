@@ -7,6 +7,14 @@
     <string name="toolbar_logout">Log out</string>
     <!-- Connect to server activity -->
     <string name="connectToServer_title">Connect to a server</string>
+    <string name="connectToServer_serverHost">Hostname</string>
+    <string name="connectToServer_serverPort">Port</string>
+    <string name="connectToServer_username">Username</string>
+    <string name="connectToServer_next">Next</string>
+    <string name="connectToServer_nickname">Nickname</string>
+    <string name="connectToServer_password">Password</string>
+    <string name="connectToServer_realName">Real name</string>
+    <string name="connectToServer_connect">Connect</string>
     <!-- Dropdown menu -->
     <string name="dropdown_settings">Settings</string>
     <!-- Placeholders (to be replaced) -->
