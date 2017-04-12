@@ -15,9 +15,22 @@
         app:actionViewClass="android.support.v7.widget.SearchView"/>
     -->
     <item
-        android:id="@+id/action_dropdown"
+        android:id="@+id/action_options"
         android:icon="@drawable/ic_menu_dropdown"
-        android:title="@string/toolbar_dropdown"
-        app:showAsAction="always"/>
+        android:title="@string/toolbar_options"
+        app:showAsAction="always">
+
+        <menu>
+            <item
+                android:id="@+id/action_settings"
+                android:title="@string/toolbar_settings"
+                app:showAsAction="never"/>
+            <item
+                android:id="@+id/action_logout"
+                android:title="@string/toolbar_logout"
+                app:showAsAction="never"/>
+        </menu>
+
+    </item>
 
 </menu>

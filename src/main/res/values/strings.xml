@@ -2,7 +2,11 @@
     <string name="app_name">Horchat</string>
     <!-- Toolbar -->
     <string name="toolbar_search">Search</string>
-    <string name="toolbar_dropdown">Menu</string>
+    <string name="toolbar_options">Menu</string>
+    <string name="toolbar_settings">Settings</string>
+    <string name="toolbar_logout">Log out</string>
+    <!-- Connect to server activity -->
+    <string name="connectToServer_title">Connect to a server</string>
     <!-- Dropdown menu -->
     <string name="dropdown_settings">Settings</string>
     <!-- Placeholders (to be replaced) -->

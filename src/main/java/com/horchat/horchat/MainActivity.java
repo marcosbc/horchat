@@ -1,5 +1,6 @@
 package com.horchat.horchat;
 
+import android.content.Intent;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
@@ -11,6 +12,7 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Button;
 
@@ -18,11 +20,12 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String ID = "horchat";
 
+    private static final String ACCOUNT_ID = "account_id";
+
+    private Account account;
+    private DatabaseHelper db;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
-    private PopupMenu popupMenu;
-
-    private MenuItem m_dropdown;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +45,28 @@ public class MainActivity extends AppCompatActivity {
         }); */
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_nav_menu);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        // Set up the database
+        db = new DatabaseHelper(getApplicationContext());
+        // Extract data from server connection intent
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            /* TODO: Get data from server connection intent */
+            // db.setSetting(db.KEY_CURRENT_ACCOUNT, userId)
+        }
+        // Configure the user account
+        account = db.getCurrentAccount();
+        if (account == null) {
+            // The user has not logged in yet, go to server connection activity
+            Intent activityIntent = new Intent(this, ConnectToServerActivity.class);
+            startActivity(activityIntent);
+        }
+        /* TODO: Restore data from savedInstance */
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        /* TODO: Make use of savedInstance (e.g. orientation change) */
+        // savedInstanceState.putInt(KEY_ID, KEY_VALUE);
     }
 
     /* Toolbar configurations */
@@ -53,9 +78,6 @@ public class MainActivity extends AppCompatActivity {
         MenuItem searchItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         */
-        // Configure dropdown menu
-        m_dropdown = menu.findItem(R.id.action_dropdown);
-        popupMenu = new PopupMenu(this, m_dropdown.getActionView());
         // Always return true
         return true;
     }
@@ -65,10 +87,21 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case android.R.id.home:
+                /* Open navigation drawer */
+                Log.d(ID, "Toolbar: Opening navigation drawer");
                 drawerLayout.openDrawer(GravityCompat.START);
                 break;
-            case R.id.action_dropdown:
-                popupMenu.show();
+            case R.id.action_options:
+                /* Will be handled via Views */
+                Log.d(ID, "Toolbar: Opening options menu");
+                break;
+            case R.id.action_settings:
+                Log.d(ID, "Toolbar: Opening settings activity");
+                /* TODO: Implement settings */
+                break;
+            case R.id.action_logout:
+                Log.d(ID, "Toolbar: Logging out");
+                /* TODO: Implement logout */
                 break;
             default:
                 Log.d(ID, "Toolbar: Other button clicked, *ignoring*");

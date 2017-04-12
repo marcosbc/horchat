@@ -8,5 +8,8 @@
     </style>
     <style name="Horchat.ActionBar.Popup" parent="ThemeOverlay.AppCompat.Light">
     </style>
+    <style name="Horchat.ActionBar.LargeTitle" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textSize">24sp</item>
+    </style>
 
 </resources>
