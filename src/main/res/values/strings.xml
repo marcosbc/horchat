@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">Horchat</string>
+    <!-- Placeholders (to be replaced) -->
+    <string name="placeholder_title">_TITLE_</string>
+    <string name="placeholder_username">_USERNAME_</string>
     <!-- Toolbar -->
     <string name="toolbar_search">Search</string>
     <string name="toolbar_options">Menu</string>
@@ -17,7 +20,9 @@
     <string name="connectToServer_connect">Connect</string>
     <!-- Dropdown menu -->
     <string name="dropdown_settings">Settings</string>
-    <!-- Placeholders (to be replaced) -->
-    <string name="placeholder_title">_TITLE_</string>
-    <string name="placeholder_username">_USERNAME_</string>
+    <!-- Toast messages -->
+    <string name="toast_logout">You have been logged out</string>
+    <!-- Settings/preferences -->
+    <string name="preference_about">About Horchat</string>
+    <string name="preference_nickname">Nickname</string>
 </resources>

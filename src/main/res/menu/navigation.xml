@@ -3,25 +3,12 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/menu_seccion_1"
-            android:title="Item 1"/>
+            android:title="Channel 1"/>
         <item
             android:id="@+id/menu_seccion_2"
-            android:title="Item 2"/>
+            android:title="Channel 2"/>
         <item
             android:id="@+id/menu_seccion_3"
-            android:title="Item 3"/>
+            android:title="Channel 3"/>
     </group>
-
-    <item
-        android:id="@+id/navigation_subheader"
-        android:title="Otras opciones">
-        <menu>
-            <item
-                android:id="@+id/menu_opcion_1"
-                android:title="Item 4"/>
-            <item
-                android:id="@+id/menu_opcion_2"
-                android:title="Item 5"/>
-        </menu>
-    </item>
 </menu>

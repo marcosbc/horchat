@@ -21,8 +21,8 @@ public class UserCredentialsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         /* Recover data from server connection fragment */
         host = getArguments().getString(MainActivity.SERVER_HOST);
-        port = getArguments().getString(MainActivity.SERVER_HOST);
-        username = getArguments().getString(MainActivity.SERVER_HOST);
+        port = getArguments().getString(MainActivity.SERVER_PORT);
+        username = getArguments().getString(MainActivity.SERVER_USERNAME);
         /* Inflate view and configure UI elements */
         View view = inflater.inflate(R.layout.fragment_user_credentials, container, false);
         nickname = (TextView) view.findViewById(R.id.nickname);
@@ -38,7 +38,6 @@ public class UserCredentialsFragment extends Fragment {
         return view;
     }
     public void connectButtonClick(Button view) {
-        Log.d("DAM", "pressed click 2");
         /* Start main activity */
         Intent activityIntent = new Intent(getContext(), MainActivity.class);
         activityIntent.putExtra(MainActivity.SERVER_HOST, host);
@@ -47,7 +46,12 @@ public class UserCredentialsFragment extends Fragment {
         activityIntent.putExtra(MainActivity.USER_NICKNAME, nickname.getText().toString());
         activityIntent.putExtra(MainActivity.USER_PASSWORD, password.getText().toString());
         activityIntent.putExtra(MainActivity.USER_REALNAME, realName.getText().toString());
+        // TODO: Remove
         activityIntent.putExtra(MainActivity.TODO_IS_LOGGED_IN, true);
+        // Clear the navigation stack and start the new activity
+        activityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(activityIntent);
+        getActivity().finish();
     }
 }

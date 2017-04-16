@@ -37,23 +37,5 @@ public class ConnectToServerActivity extends AppCompatActivity {
         /* Add fragment to the FrameLayout */
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.connect_frame, serverCredentialsFragment).commit();
-        /* Define attributes */
-        /*
-        serverHost = (TextView) findViewById(R.id.serverHost);
-        serverPort = (TextView) findViewById(R.id.serverPort);
-        username = (TextView) findViewById(R.id.username);
-        */
     }
-
-    /*
-    @Override
-    protected void connectToServerClick(View view) {
-        Intent connectToServerIntent = new Intent(this, MainActivity.class);
-        connectToServerIntent.putExtra(MainActivity.SERVER_HOST, serverHost.getText().toString());
-        connectToServerIntent.putExtra(MainActivity.SERVER_PORT, serverPort.getText().toString());
-        connectToServerIntent.putExtra(MainActivity.SERVER_USERNAME, username.getText().toString());
-        startActivity(connectToServerIntent);
-    }
-    */
-
 }

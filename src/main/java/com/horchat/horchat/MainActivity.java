@@ -15,11 +15,13 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String ID = "horchat";
 
+    public static final String ID_SESSION = "session";
     public static final String SERVER_HOST = "serverHost";
     public static final String SERVER_PORT = "serverPort";
     public static final String SERVER_USERNAME = "username";
@@ -29,8 +31,9 @@ public class MainActivity extends AppCompatActivity {
     /* TODO: Remove */
     public static final String TODO_IS_LOGGED_IN = "isLoggedIn";
 
-    private Account account;
-    private DatabaseHelper db;
+    private Account account = null;
+    private Session session = null;
+    private DatabaseHelper db = null;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
 
@@ -45,37 +48,56 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         // Configure navigation drawer
-        /* navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+        /*
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override public boolean onNavigationItemSelected(MenuItem menuItem) {
                 return true;
             }
-        }); */
+        });
+        */
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_nav_menu);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        // Set up the database
+        // Setup the database handler
         db = new DatabaseHelper(getApplicationContext());
-        // Extract data from server connection intent
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            /* TODO: Get data from server connection intent */
-            // db.setSetting(db.KEY_CURRENT_ACCOUNT, userId)
+        // Setup the session if it wasn't defined yet
+        if (savedInstanceState != null) {
+            /* TODO: Verify */
+            Log.i(ID, "Activity has been re-loaded");
+            session = (Session) savedInstanceState.getSerializable(ID_SESSION);
+            if (session != null) {
+                account = session.getAccount();
+            }
+        } else {
+            // Check if the user was already logged in
+            account = db.getCurrentAccount();
+            if (account == null) {
+                Log.d(ID, "Looking for account");
+                // Check if credentials were sent from login activity
+                Bundle extras = getIntent().getExtras();
+                if (extras != null) {
+                    Log.d(ID, "Creating account with credentials from login activity");
+                    account = db.createAccount(extras);
+                }
+                if (account != null) {
+                    Log.d(ID, "Account was successfully created");
+                    // The session is now valid
+                    session = new Session(account);
+                    // Save in settings
+                    db.setSetting(DatabaseHelper.ID_CURRENT_ACCOUNT, String.valueOf(account.getId()));
+                }
+                // If we got nothing, logout
+                else {
+                    // The user has not logged in yet, go to server connection activity
+                    logout();
+                }
+            }
         }
-        // Configure the user account
-        account = db.getCurrentAccount();
-        /* TODO: Uncomment this */
-        //if (account == null) {
-        if (extras == null || extras.getBoolean(TODO_IS_LOGGED_IN) != true) {
-            // The user has not logged in yet, go to server connection activity
-            Intent activityIntent = new Intent(this, ConnectToServerActivity.class);
-            startActivity(activityIntent);
-        }
-        /* TODO: Restore data from savedInstance */
     }
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         /* TODO: Make use of savedInstance (e.g. orientation change) */
-        // savedInstanceState.putInt(KEY_ID, KEY_VALUE);
+        savedInstanceState.putSerializable(ID_SESSION, session);
     }
 
     /* Toolbar configurations */
@@ -87,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
         MenuItem searchItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         */
-        // Always return true
+        /* Will always return true */
         return true;
     }
 
@@ -101,20 +123,39 @@ public class MainActivity extends AppCompatActivity {
                 drawerLayout.openDrawer(GravityCompat.START);
                 break;
             case R.id.action_options:
-                /* Will be handled via Views */
+                /* Dropdown button will be handled via Views */
                 Log.d(ID, "Toolbar: Opening options menu");
                 break;
             case R.id.action_settings:
+                /* Open a new activity for settings */
                 Log.d(ID, "Toolbar: Opening settings activity");
-                /* TODO: Implement settings */
+                Intent settingsIntent = new Intent(this, SettingsActivity.class);
+                startActivity(settingsIntent);
                 break;
             case R.id.action_logout:
+                /* Perform logout of the user */
                 Log.d(ID, "Toolbar: Logging out");
-                /* TODO: Implement logout */
+                Toast.makeText(getApplicationContext(), R.string.toast_logout, Toast.LENGTH_SHORT).show();
+                logout();
                 break;
             default:
                 Log.d(ID, "Toolbar: Other button clicked, *ignoring*");
         }
         return true;
+    }
+
+    /* Logs a user out, and starts the login-related activity */
+    public void logout() {
+        Intent activityIntent = new Intent(this, ConnectToServerActivity.class);
+        /* Clear navigation history */
+        activityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        /* Remove login mark in settings */
+        if (db != null) {
+            db.logout();
+        }
+        /* Start the activity */
+        startActivity(activityIntent);
+        finish();
     }
 }
