@@ -1,11 +1,11 @@
-package com.horchat.horchat;
+package com.horchat.horchat.activity;
 
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.MenuItem;
+
+import com.horchat.horchat.R;
+import com.horchat.horchat.fragment.SettingsFragment;
 
 public class SettingsActivity extends AppCompatActivity {
     private static final String ID = "horchat";

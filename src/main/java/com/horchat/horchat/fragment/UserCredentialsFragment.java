@@ -1,14 +1,16 @@
-package com.horchat.horchat;
+package com.horchat.horchat.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.horchat.horchat.R;
+import com.horchat.horchat.activity.MainActivity;
 
 public class UserCredentialsFragment extends Fragment {
     private String host;

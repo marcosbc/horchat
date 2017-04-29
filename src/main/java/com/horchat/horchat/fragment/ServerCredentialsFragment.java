@@ -1,4 +1,4 @@
-package com.horchat.horchat;
+package com.horchat.horchat.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,6 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.horchat.horchat.R;
+import com.horchat.horchat.activity.MainActivity;
 
 public class ServerCredentialsFragment extends Fragment {
     private TextView serverHost;

@@ -1,4 +1,4 @@
-package com.horchat.horchat;
+package com.horchat.horchat.model;
 
 import java.io.Serializable;
 

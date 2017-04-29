@@ -25,4 +25,9 @@
     <!-- Settings/preferences -->
     <string name="preference_about">About Horchat</string>
     <string name="preference_nickname">Nickname</string>
+    <!-- Navigation -->
+    <string name="navigation_joinChannel">Join a channel</string>
+    <string name="navigation_channels">Channels</string>
+    <string name="navigation_sendPrivateMessage">Start a conversation</string>
+    <string name="navigation_pms">Private conversations</string>
 </resources>

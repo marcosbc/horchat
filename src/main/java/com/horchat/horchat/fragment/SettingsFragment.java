@@ -1,7 +1,9 @@
-package com.horchat.horchat;
+package com.horchat.horchat.fragment;
 
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
+
+import com.horchat.horchat.R;
 
 public class SettingsFragment extends PreferenceFragment {
     @Override

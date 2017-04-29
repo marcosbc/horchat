@@ -1,14 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/menu_seccion_1"
-            android:title="Channel 1"/>
-        <item
-            android:id="@+id/menu_seccion_2"
-            android:title="Channel 2"/>
-        <item
-            android:id="@+id/menu_seccion_3"
-            android:title="Channel 3"/>
-    </group>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <item
+        android:id="@+id/navigation_join"
+        android:title="@string/navigation_joinChannel"
+        android:icon="@drawable/ic_menu_allfriends"/>
+    <item
+        android:id="@+id/navigation_pm"
+        android:title="@string/navigation_sendPrivateMessage"
+        android:icon="@drawable/ic_menu_start_conversation"/>
+    <item
+        android:id="@+id/navigation_channels"
+        android:title="@string/navigation_channels">
+        <menu>
+            <item
+                android:id="@+id/channel_1"
+                android:title="Channel 1"/>
+            <item
+                android:id="@+id/channel_2"
+                android:title="Channel 2"/>
+            <item
+                android:id="@+id/channel_3"
+                android:title="Channel 3"/>
+            <item
+                android:id="@+id/channel_4"
+                android:title="Channel 4"/>
+            <item
+                android:id="@+id/channel_5"
+                android:title="Channel 5"/>
+        </menu>
+    </item>
+    <item
+        android:id="@+id/navigation_pms"
+        android:title="@string/navigation_pms">
+        <menu>
+            <item
+                android:id="@+id/pm_1"
+                android:title="User 1"/>
+            <item
+                android:id="@+id/pm_2"
+                android:title="User 2"/>
+            <item
+                android:id="@+id/pm_3"
+                android:title="User 3"/>
+            <item
+                android:id="@+id/pm_4"
+                android:title="User 4"/>
+            <item
+                android:id="@+id/pm_5"
+                android:title="User 5"/>
+            <item
+                android:id="@+id/pm_6"
+                android:title="User 6"/>
+        </menu>
+    </item>
 </menu>

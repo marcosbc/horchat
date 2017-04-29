@@ -1,4 +1,4 @@
-package com.horchat.horchat;
+package com.horchat.horchat.db;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,11 +6,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
-import android.util.Log;
 
-import java.io.Serializable;
+import com.horchat.horchat.activity.MainActivity;
+import com.horchat.horchat.model.Account;
+import com.horchat.horchat.model.Settings;
 
-class DatabaseHelper extends SQLiteOpenHelper {
+public class DatabaseHelper extends SQLiteOpenHelper {
     /* Database configuration */
     private static final String DB_NAME         = "horchat";
     private static final int DB_VERSION         = 1;
