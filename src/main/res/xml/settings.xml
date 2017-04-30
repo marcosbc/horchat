@@ -9,7 +9,7 @@
         android:key="about">
         <intent
             android:targetPackage="com.horchat.horchat"
-            android:targetClass="com.horchat.horchat.SettingsActivity"
+            android:targetClass="com.horchat.horchat.activity.SettingsActivity"
             android:action="com.horchat.horchat.PREFS_ABOUT"/>
     </PreferenceScreen>
 </PreferenceScreen>

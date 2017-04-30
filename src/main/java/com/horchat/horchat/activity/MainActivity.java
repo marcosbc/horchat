@@ -1,5 +1,6 @@
 package com.horchat.horchat.activity;
 
+import android.content.ClipData;
 import android.content.Intent;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -8,14 +9,27 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 
 import com.horchat.horchat.R;
+import com.horchat.horchat.adapter.DrawerAdapter;
 import com.horchat.horchat.db.DatabaseHelper;
 import com.horchat.horchat.model.Account;
+import com.horchat.horchat.model.DrawerEntry;
+import com.horchat.horchat.model.DrawerItem;
+import com.horchat.horchat.model.DrawerSection;
 import com.horchat.horchat.model.Session;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -36,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseHelper db = null;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
+    private ListView mDrawerList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         // Set up layouts
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        //navigationView = (NavigationView) findViewById(R.id.navigation_view);
         // Configure toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -89,9 +104,43 @@ public class MainActivity extends AppCompatActivity {
                 else {
                     // The user has not logged in yet, go to server connection activity
                     logout();
+                    return;
                 }
             }
         }
+        // Inflate navigation drawer list
+        mDrawerList = (ListView) findViewById(R.id.drawer_list);
+        LayoutInflater inflater = getLayoutInflater();
+        // Populate drawer item list
+        List<DrawerItem> drawerItemList = new ArrayList<DrawerItem>();
+        drawerItemList.add(new DrawerSection("Channels"));
+        drawerItemList.add(new DrawerEntry("Channel 1", 0));
+        drawerItemList.add(new DrawerEntry("Channel 2", 0));
+        drawerItemList.add(new DrawerEntry("Channel 3", 0));
+        drawerItemList.add(new DrawerEntry("Channel 4", 0));
+        drawerItemList.add(new DrawerEntry("Channel 5", 0));
+        drawerItemList.add(new DrawerEntry("Channel 6", 0));
+        drawerItemList.add(new DrawerEntry("Join channel", R.drawable.ic_menu_allfriends));
+        drawerItemList.add(new DrawerSection("Private conversations"));
+        drawerItemList.add(new DrawerEntry("User 1", 0));
+        drawerItemList.add(new DrawerEntry("User 2", 0));
+        drawerItemList.add(new DrawerEntry("User 3", 0));
+        drawerItemList.add(new DrawerEntry("User 4", 0));
+        drawerItemList.add(new DrawerEntry("User 5", 0));
+        drawerItemList.add(new DrawerEntry("Start private conversation", R.drawable.ic_menu_start_conversation));
+        // Add drawer header
+        ViewGroup drawerHeader = (ViewGroup) inflater.inflate(R.layout.navigation_drawer_header,
+                mDrawerList, false);
+        mDrawerList.addHeaderView(drawerHeader, null, false);
+        // Add onClick listener
+        mDrawerList.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                onNavigationDrawerItemClick(mDrawerList.getAdapter().getItem(position));
+            }
+        });
+        // Set list adapter
+        mDrawerList.setAdapter(new DrawerAdapter(this, drawerItemList));
     }
 
     @Override
@@ -142,6 +191,12 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(ID, "Toolbar: Other button clicked, *ignoring*");
         }
         return true;
+    }
+
+    /* Navigation drawer item click */
+    private void onNavigationDrawerItemClick(Object item) {
+        DrawerItem drawerItem = (DrawerItem) item;
+        Log.d(ID, "Clicked on item: " + drawerItem.getItemName());
     }
 
     /* Logs a user out, and starts the login-related activity */
