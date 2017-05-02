@@ -4,6 +4,7 @@ public class DrawerEntry implements DrawerItem {
     private int mEntryType;
     private String mEntryName;
     private int mEntryIcon;
+    private int mSpecialId;
     public DrawerEntry(String entryName, int entryIcon) {
         super();
         mEntryName = entryName;

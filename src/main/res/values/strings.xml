@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Horchat</string>
     <!-- Placeholders (to be replaced) -->
-    <string name="placeholder_title">_TITLE_</string>
+    <string name="placeholder_title">Horchat</string>
     <string name="placeholder_username">_USERNAME_</string>
     <string name="placeholder_item">_ITEM_</string>
     <!-- Toolbar -->
@@ -29,7 +29,11 @@
     <!-- Navigation -->
     <string name="navigation_joinChannel">Join a channel</string>
     <string name="navigation_channels">Channels</string>
-    <string name="navigation_sendPrivateMessage">Start a conversation</string>
+    <string name="navigation_sendPrivateMessage">New private conversation</string>
     <string name="navigation_pms">Private conversations</string>
-    <string name="title_activity_search">SearchActivity</string>
+    <string name="title_activity_pickChannel">Pick a channel</string>
+    <string name="title_activity_pickUser">Pick a user</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

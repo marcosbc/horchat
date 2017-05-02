@@ -16,14 +16,14 @@ import com.horchat.horchat.model.DrawerSection;
 
 import java.util.List;
 
-public class DrawerAdapter extends ArrayAdapter<DrawerItem> {
+public class DrawerListAdapter extends ArrayAdapter<DrawerItem> {
     public static final int TYPE_SECTION = 0;
     public static final int TYPE_ENTRY = 1;
     public static final int TYPE_ENTRY_WITH_ICON = 2;
     public static final int NUM_TYPES = 3;
     private Context mContext;
     private List<DrawerItem> mItemList;
-    public DrawerAdapter(Context context, List<DrawerItem> itemList) {
+    public DrawerListAdapter(Context context, List<DrawerItem> itemList) {
         super(context, 0, itemList);
         this.mContext = context;
         this.mItemList = itemList;
@@ -61,11 +61,8 @@ public class DrawerAdapter extends ArrayAdapter<DrawerItem> {
     public View getView(int pos, View view, ViewGroup parent) {
         ViewHolder viewHolder;
         DrawerItem model = (DrawerItem) mItemList.get(pos);
-        int layoutResource = 0;
-        Log.d("HORCHAT", "Is section? " + model.isSection() + ";  name " + model.getItemName());
         // Identify the row type: Section, entry with or without icon
         int type = getItemViewType(pos);
-
         if (view == null) {
             viewHolder = new ViewHolder();
             view = getInflatedLayoutForType(type);
@@ -89,9 +86,8 @@ public class DrawerAdapter extends ArrayAdapter<DrawerItem> {
         }
         return view;
     }
-    public
     // View Holder class (check: View Holder pattern)
-    static class ViewHolder {
+    private static class ViewHolder {
         TextView name;
         ImageView icon;
     }

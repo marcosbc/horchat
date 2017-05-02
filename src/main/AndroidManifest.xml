@@ -22,9 +22,7 @@
         <activity
             android:name=".activity.ConnectToServerActivity"/>
         <activity
-            android:name=".activity.SearchActivity"
-            android:label="@string/title_activity_search"
-            android:theme="@style/Horchat"/>
+            android:name=".activity.PickTargetActivity"/>
     </application>
 
 </manifest>

@@ -1,8 +1,6 @@
 package com.horchat.horchat.activity;
 
-import android.content.ClipData;
 import android.content.Intent;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -20,7 +18,7 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.horchat.horchat.R;
-import com.horchat.horchat.adapter.DrawerAdapter;
+import com.horchat.horchat.adapter.DrawerListAdapter;
 import com.horchat.horchat.db.DatabaseHelper;
 import com.horchat.horchat.model.Account;
 import com.horchat.horchat.model.DrawerEntry;
@@ -45,11 +43,13 @@ public class MainActivity extends AppCompatActivity {
     /* TODO: Remove */
     public static final String TODO_IS_LOGGED_IN = "isLoggedIn";
 
+    public static final int PICK_CHANNEL_REQUEST = 101;
+    public static final int PICK_USER_REQUEST = 102;
+
     private Account account = null;
     private Session session = null;
     private DatabaseHelper db = null;
     private DrawerLayout drawerLayout;
-    private NavigationView navigationView;
     private ListView mDrawerList;
 
     @Override
@@ -58,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         // Set up layouts
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        //navigationView = (NavigationView) findViewById(R.id.navigation_view);
         // Configure toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -112,22 +111,18 @@ public class MainActivity extends AppCompatActivity {
         mDrawerList = (ListView) findViewById(R.id.drawer_list);
         LayoutInflater inflater = getLayoutInflater();
         // Populate drawer item list
+        // Channels
         List<DrawerItem> drawerItemList = new ArrayList<DrawerItem>();
-        drawerItemList.add(new DrawerSection("Channels"));
-        drawerItemList.add(new DrawerEntry("Channel 1", 0));
-        drawerItemList.add(new DrawerEntry("Channel 2", 0));
-        drawerItemList.add(new DrawerEntry("Channel 3", 0));
-        drawerItemList.add(new DrawerEntry("Channel 4", 0));
-        drawerItemList.add(new DrawerEntry("Channel 5", 0));
-        drawerItemList.add(new DrawerEntry("Channel 6", 0));
-        drawerItemList.add(new DrawerEntry("Join channel", R.drawable.ic_menu_allfriends));
-        drawerItemList.add(new DrawerSection("Private conversations"));
-        drawerItemList.add(new DrawerEntry("User 1", 0));
-        drawerItemList.add(new DrawerEntry("User 2", 0));
-        drawerItemList.add(new DrawerEntry("User 3", 0));
-        drawerItemList.add(new DrawerEntry("User 4", 0));
-        drawerItemList.add(new DrawerEntry("User 5", 0));
-        drawerItemList.add(new DrawerEntry("Start private conversation", R.drawable.ic_menu_start_conversation));
+        drawerItemList.add(new DrawerSection(getResources().getString(R.string.navigation_channels)));
+        // Populate channel list
+        for (String channelName: getChannelNames()) {
+            drawerItemList.add(new DrawerEntry(channelName, 0));
+        }
+        drawerItemList.add(new DrawerEntry(getResources().getString(R.string.navigation_joinChannel), R.drawable.ic_menu_allfriends));
+        // Private messages
+        drawerItemList.add(new DrawerSection(getResources().getString(R.string.navigation_pms)));
+        // No private messages open by default
+        drawerItemList.add(new DrawerEntry(getResources().getString(R.string.navigation_sendPrivateMessage), R.drawable.ic_menu_start_conversation));
         // Add drawer header
         ViewGroup drawerHeader = (ViewGroup) inflater.inflate(R.layout.navigation_drawer_header,
                 mDrawerList, false);
@@ -140,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         // Set list adapter
-        mDrawerList.setAdapter(new DrawerAdapter(this, drawerItemList));
+        mDrawerList.setAdapter(new DrawerListAdapter(this, drawerItemList));
     }
 
     @Override
@@ -193,10 +188,51 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    /* Called when getting result from an activity (e.g. navigation drawer menu) */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case PICK_CHANNEL_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    String channel = data.getStringExtra(PickTargetActivity.PICK);
+                    Toast.makeText(getApplicationContext(), "Selected channel " + channel, Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case PICK_USER_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    String user = data.getStringExtra(PickTargetActivity.PICK);
+                    Toast.makeText(getApplicationContext(), "Selected user " + user, Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+        }
+    }
+
+
     /* Navigation drawer item click */
     private void onNavigationDrawerItemClick(Object item) {
-        DrawerItem drawerItem = (DrawerItem) item;
-        Log.d(ID, "Clicked on item: " + drawerItem.getItemName());
+        DrawerEntry drawerEntry = (DrawerEntry) item;
+        String itemName = drawerEntry.getItemName();
+        if (drawerEntry.hasIcon()) {
+            if (itemName.equals(
+                    getResources().getString(R.string.navigation_joinChannel))) {
+                // Clicked on "Join channel"
+                Intent activityIntent = new Intent(this, PickTargetActivity.class);
+                activityIntent.putExtra(PickTargetActivity.TYPE, PickTargetActivity.TYPE_CHANNEL);
+                startActivityForResult(activityIntent, PICK_CHANNEL_REQUEST);
+            } else if (itemName.equals(
+                    getResources().getString(R.string.navigation_sendPrivateMessage))) {
+                // Clicked on "Open new conversation"
+                Intent activityIntent = new Intent(this, PickTargetActivity.class);
+                activityIntent.putExtra(PickTargetActivity.TYPE, PickTargetActivity.TYPE_PRIVATE);
+                startActivityForResult(activityIntent, PICK_USER_REQUEST);
+            } else {
+                Log.w(ID, "Wrong item clicked: " + itemName);
+            }
+        } else {
+            Log.d(ID, "Clicked on item: " + itemName);
+        }
     }
 
     /* Logs a user out, and starts the login-related activity */
@@ -212,5 +248,16 @@ public class MainActivity extends AppCompatActivity {
         /* Start the activity */
         startActivity(activityIntent);
         finish();
+    }
+
+    /* Get list of channel names available */
+    public List<String> getChannelNames() {
+        List<String> channelNames = new ArrayList<String>();
+        channelNames.add("Channel 1");
+        channelNames.add("Channel 2");
+        channelNames.add("Channel 3");
+        channelNames.add("Channel 4");
+        channelNames.add("Channel 5");
+        return channelNames;
     }
 }
