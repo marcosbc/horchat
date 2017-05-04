@@ -1,5 +1,6 @@
 package com.horchat.horchat.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -20,6 +21,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import com.horchat.horchat.R;
 import com.horchat.horchat.adapter.DrawerListAdapter;
 import com.horchat.horchat.db.DatabaseHelper;
+import com.horchat.horchat.irc.IRCService;
+import com.horchat.horchat.irc.IRCServiceConnection;
 import com.horchat.horchat.model.Account;
 import com.horchat.horchat.model.DrawerEntry;
 import com.horchat.horchat.model.DrawerItem;
@@ -31,17 +34,11 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String ID = "horchat";
+    public static final String ID = "horchat";
 
     public static final String ID_SESSION = "session";
-    public static final String SERVER_HOST = "serverHost";
-    public static final String SERVER_PORT = "serverPort";
-    public static final String SERVER_USERNAME = "username";
-    public static final String USER_NICKNAME = "nickname";
-    public static final String USER_PASSWORD = "password";
-    public static final String USER_REALNAME = "realName";
-    /* TODO: Remove */
-    public static final String TODO_IS_LOGGED_IN = "isLoggedIn";
+    public static final String SERVER = "MainActivity__server";
+    public static final String ACCOUNT = "MainActivity__account";
 
     public static final int PICK_CHANNEL_REQUEST = 101;
     public static final int PICK_USER_REQUEST = 102;
@@ -51,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseHelper db = null;
     private DrawerLayout drawerLayout;
     private ListView mDrawerList;
+    private IRCServiceConnection mServiceConnection = new IRCServiceConnection();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,24 +81,21 @@ public class MainActivity extends AppCompatActivity {
             }
         } else {
             // Check if the user was already logged in
-            account = db.getCurrentAccount();
-            if (account == null) {
-                Log.d(ID, "Looking for account");
+            session = db.getCurrentSession();
+            if (session == null) {
+                Log.d(ID, "Creating new account");
                 // Check if credentials were sent from login activity
                 Bundle extras = getIntent().getExtras();
                 if (extras != null) {
                     Log.d(ID, "Creating account with credentials from login activity");
-                    account = db.createAccount(extras);
+                    session = db.createSession(extras);
                 }
-                if (account != null) {
+                if (session != null) {
                     Log.d(ID, "Account was successfully created");
-                    // The session is now valid
-                    session = new Session(account);
-                    // Save in settings
-                    db.setSetting(DatabaseHelper.ID_CURRENT_ACCOUNT, String.valueOf(account.getId()));
                 }
                 // If we got nothing, logout
                 else {
+                    Log.d(ID, "Account was not created!");
                     // The user has not logged in yet, go to server connection activity
                     logout();
                     return;
@@ -136,6 +131,21 @@ public class MainActivity extends AppCompatActivity {
         });
         // Set list adapter
         mDrawerList.setAdapter(new DrawerListAdapter(this, drawerItemList));
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Bind to the IRC service
+        Intent ircServiceIntent = new Intent(this, IRCService.class);
+        bindService(ircServiceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // Unbind from the service
+        mServiceConnection.onServiceDisconnected(null);
     }
 
     @Override
@@ -237,6 +247,7 @@ public class MainActivity extends AppCompatActivity {
 
     /* Logs a user out, and starts the login-related activity */
     public void logout() {
+        Log.d(ID, "Logging out...");
         Intent activityIntent = new Intent(this, ConnectToServerActivity.class);
         /* Clear navigation history */
         activityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

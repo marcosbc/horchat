@@ -6,31 +6,35 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.horchat.horchat.activity.MainActivity;
 import com.horchat.horchat.model.Account;
+import com.horchat.horchat.model.Server;
+import com.horchat.horchat.model.Session;
 import com.horchat.horchat.model.Settings;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
+    public static final String ID = "horchat";
     /* Database configuration */
     private static final String DB_NAME         = "horchat";
     private static final int DB_VERSION         = 1;
     /* Table names */
-    private static final String TABLE_ACCOUNTS  = "accounts";
+    private static final String TABLE_SESSIONS  = "sessions";
     private static final String TABLE_SETTINGS  = "settings";
     /* Strings for creating and dropping databases */
-    private static final String SQL_CREATE_ACCOUNTS =
-            "CREATE TABLE IF NOT EXISTS " + TABLE_ACCOUNTS + " ("   +
-            "    _id        INTEGER PRIMARY KEY AUTOINCREMENT,"     +
-            "    username   TEXT,"                                  +
-            "    nickname   TEXT,"                                  +
+    private static final String SQL_CREATE_SESSIONS =
+            "CREATE TABLE IF NOT EXISTS " + TABLE_SESSIONS + " ("   +
+            "    username   TEXT    NOT NULL,"                      +
+            "    realName   TEXT    NOT NULL,"                      +
+            "    nickname   TEXT    NOT NULL,"                      +
+            "    host       TEXT    NOT NULL,"                      +
+            "    port       INTEGER NOT NULL,"                      +
             "    password   TEXT,"                                  +
-            "    realname   TEXT,"                                  +
-            "    host       TEXT,"                                  +
-            "    port       INTEGER"                                +
+            "    PRIMARY KEY (username, host)"                      +
             ")";
-    private static final String SQL_DROP_ACCOUNTS =
-            "DROP TABLE IF EXISTS " + TABLE_ACCOUNTS;
+    private static final String SQL_DROP_SESSIONS =
+            "DROP TABLE IF EXISTS " + TABLE_SESSIONS;
     private static final String SQL_CREATE_SETTINGS =
             "CREATE TABLE IF NOT EXISTS " + TABLE_SETTINGS + " ("   +
             "    key        TEXT PRIMARY KEY,"                      +
@@ -39,7 +43,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String SQL_DROP_SETTINGS =
             "DROP TABLE IF EXISTS " + TABLE_SETTINGS;
     /* Table keys */
-    public static final String ID_CURRENT_ACCOUNT = "currentAccountId";
+    public static final String ID_CURRENT_SESSION = "currentSessionId";
     /* Class attributes */
     private Settings settings;
 
@@ -52,7 +56,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /* Database instantiation method */
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(SQL_CREATE_ACCOUNTS);
+        db.execSQL(SQL_CREATE_SESSIONS);
         db.execSQL(SQL_CREATE_SETTINGS);
     }
 
@@ -60,7 +64,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         /* TODO: Implement proper upgrade method */
-        db.execSQL(SQL_DROP_ACCOUNTS);
+        db.execSQL(SQL_DROP_SESSIONS);
         db.execSQL(SQL_DROP_SETTINGS);
         onCreate(db);
     }
@@ -108,66 +112,83 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         settings.clearValue(key);
         db.close();
     }
-    public Account getCurrentAccount() {
-        Account account = null;
+    public Session getCurrentSession() {
+        Session session = null;
         // Get the current active account
-        long currentAccount = Long.valueOf(getIntegerSetting(ID_CURRENT_ACCOUNT));
+        long currentSession = getIntegerSetting(ID_CURRENT_SESSION);
         // Check if the key is defined, if not, the user was not logged in
-        if (currentAccount > 0) {
-            account = getAccount(currentAccount);
+        if (currentSession > 0) {
+            Log.d(ID, "Found current session");
+            session = getSession(currentSession);
+        } else {
+            Log.d(ID, "Could not find any active session");
         }
-        return account;
+        return session;
     }
-    private Account getAccount(long id) {
-        Account account = null;
-        String tuples[] = {"_id", "username", "nickname", "password", "realname", "host", "port"};
+    private Session getSession(long id) {
+        Session session = null;
+        String tuples[] = {"rowid", "username", "realName", "nickname", "host", "port", "password"};
         SQLiteDatabase db = getReadableDatabase();
+        Log.d(ID, "checking db");
         if (db != null) {
+            Log.d(ID, "db is not null");
             if (id > 0) {
+                Log.d(ID, "Creating Session object");
                 // Search for the current session
-                Cursor cursor = db.query(TABLE_ACCOUNTS, tuples, "_id = '" + id + "'", null, null, null, null, null);
-                account = new Account(cursor);
+                Cursor cursor = db.query(TABLE_SESSIONS, tuples, "rowid = '" + id + "'",
+                        null, null, null, null, null);
+                session = new Session(cursor);
                 cursor.close();
             }
             db.close();
         }
-        return account;
+        return session;
     }
-    public Account createAccount(Bundle info) {
-        Account account = null;
+    public Session createSession(Bundle info) {
+        Session session = null;
         // Get parameters
-        String host = info.getString(MainActivity.SERVER_HOST);
-        String port = info.getString(MainActivity.SERVER_PORT);
-        String username = info.getString(MainActivity.SERVER_USERNAME);
-        String nickname = info.getString(MainActivity.USER_NICKNAME);
-        String password = info.getString(MainActivity.USER_PASSWORD);
-        String realname = info.getString(MainActivity.USER_REALNAME);
+        Account account = (Account) info.getSerializable(MainActivity.ACCOUNT);
+        Server server = (Server) info.getSerializable(MainActivity.SERVER);
         // Check if activities were performed
-        if (host != null && username != null) {
+        if (account != null && server != null) {
             // Populate the row to insert
             ContentValues row = new ContentValues();
-            row.put("host", host);
-            row.put("port", port);
-            row.put("username", username);
-            row.put("nickname", nickname);
-            row.put("password", password);
-            row.put("realname", realname);
+            row.put("username", account.getUsername());
+            row.put("realName", account.getRealName());
+            row.put("nickname", account.getNickname());
+            row.put("host",     server.getHost());
+            row.put("port",     server.getPort());
+            row.put("password", server.getPassword());
             // Initialize the database connection
             SQLiteDatabase db = getWritableDatabase();
             if (db != null) {
-                long userId = db.insert(TABLE_ACCOUNTS, null, row);
-                account = getAccount(userId);
+                Log.d(ID, "Inserting session to db");
+                long userId = db.insert(TABLE_SESSIONS, null, row);
+                Log.d(ID, "value of id: " + userId);
+                session = getSession(userId);
                 db.close();
             }
+        } else {
+            Log.d(ID, "Null value detected in " +
+                    ((account == null && server != null) ? "'account'" : "") +
+                    ((server == null && account != null) ? "'server'" : "") +
+                    ((account == null && server == null) ? "both 'account' and 'server'" : ""));
         }
-        return account;
+        if (session != null) {
+            Log.d(ID, "Setting current session");
+            // Save in settings
+            setSetting(ID_CURRENT_SESSION, String.valueOf(session.getAccount().getId()));
+        } else {
+            Log.d(ID, "Object 'session' is null");
+        }
+        return session;
     }
 
     /* Called upon logout */
     public void logout() {
-        if (this.getSetting(ID_CURRENT_ACCOUNT) != null) {
+        if (this.getSetting(ID_CURRENT_SESSION) != null) {
             SQLiteDatabase db = getWritableDatabase();
-            db.delete(TABLE_SETTINGS, "key = '" + ID_CURRENT_ACCOUNT + "'", null);
+            db.delete(TABLE_SETTINGS, "key = '" + ID_CURRENT_SESSION + "'", null);
             db.close();
         }
     }

@@ -11,14 +11,22 @@
     <string name="toolbar_logout">Log out</string>
     <!-- Connect to server activity -->
     <string name="connectToServer_title">Connect to a server</string>
+    <string name="connectToServer_next">Next</string>
     <string name="connectToServer_serverHost">Hostname</string>
     <string name="connectToServer_serverPort">Port</string>
+    <string name="connectToServer_serverPassword">Password</string>
     <string name="connectToServer_username">Username</string>
-    <string name="connectToServer_next">Next</string>
-    <string name="connectToServer_nickname">Nickname</string>
-    <string name="connectToServer_password">Password</string>
     <string name="connectToServer_realName">Real name</string>
+    <string name="connectToServer_nickname">Nickname</string>
     <string name="connectToServer_connect">Connect</string>
+    <string name="connectToServer_eUnknown">Unknown exception happened</string>
+    <string name="connectToServer_eHostNotValid">Please check your hostname</string>
+    <string name="connectToServer_ePortRange">Please check your port number</string>
+    <string name="connectToServer_ePortNotInt">Could not parse your port number</string>
+    <string name="connectToServer_eUsernameEmpty">The username field cannot be empty</string>
+    <string name="connectToServer_eRealNameEmpty">The real name field cannot be empty</string>
+    <string name="connectToServer_eNicknameEmpty">The nickname field cannot be empty</string>
+    <string name="connectToServer_eNicknameLength">The nickname length is not valid</string>
     <!-- Dropdown menu -->
     <string name="dropdown_settings">Settings</string>
     <!-- Toast messages -->

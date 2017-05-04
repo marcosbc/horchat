@@ -3,74 +3,66 @@ package com.horchat.horchat.model;
 import android.database.Cursor;
 import android.util.Log;
 
+import com.horchat.horchat.exception.AccountValidationException;
+
 import java.io.Serializable;
 
 public class Account implements Serializable {
+    /* Constants */
+    public static final int E_USERNAMEEMPTY = 21;
+    public static final int E_REALNAMEEMPTY = 22;
+    public static final int E_NICKNAMEEMPTY = 23;
+    public static final int E_NICKNAMELENGTH = 24;
+    public static final int MAX_NICKNAME_LENGTH = 9;
     /* Private attributes */
-    private int _id;
-    private String username;
-    private String nickname;
-    private String realname;
-    private String password;
-    private String host;
-    private int port;
+    private long mId;
+    private String mUsername;
+    private String mRealName;
+    private String mNickname;
     /* Class constructor */
-    public Account(Cursor cursor) {
-        // Only one row will exist
-        cursor.moveToFirst();
-        if (cursor.getColumnCount() > 0) {
-            int id = 0;
-            setId(cursor.getInt(id++));
-            setUsername(cursor.getString(id++));
-            setNickname(cursor.getString(id++));
-            setPassword(cursor.getString(id++));
-            setRealname(cursor.getString(id++));
-            setHost(cursor.getString(id++));
-            setPort(Integer.parseInt(cursor.getString(id++)));
-        }
+    public Account(CharSequence username, CharSequence realName, CharSequence nickname)
+            throws AccountValidationException {
+        setUsername(username.toString());
+        setRealName(realName.toString());
+        setNickname(nickname.toString());
     }
     /* Getters and setters */
-    private void setId(int id) {
-        this._id = id;
+    public void setId(long id) {
+        this.mId = id;
     }
-    public int getId() {
-        return _id;
+    public long getId() {
+        return mId;
     }
-    private void setUsername(String username) {
-        this.username = username;
+    private void setUsername(String username) throws AccountValidationException {
+        if (username == null || username.isEmpty()) {
+            throw new AccountValidationException(E_USERNAMEEMPTY);
+        } else {
+            this.mUsername = username;
+        }
     }
     public String getUsername() {
-        return username;
+        return mUsername;
     }
-    private void setNickname(String nickname) {
-        this.nickname = nickname;
+    private void setRealName(String realname) throws AccountValidationException {
+        if (realname == null || realname.isEmpty()) {
+            throw new AccountValidationException(E_REALNAMEEMPTY);
+        } else {
+            this.mRealName = realname;
+        }
+    }
+    public String getRealName() {
+        return mRealName;
+    }
+    private void setNickname(String nickname) throws AccountValidationException {
+        if (nickname == null || nickname.isEmpty()) {
+            throw new AccountValidationException(E_NICKNAMEEMPTY);
+        } else if (nickname.length() > MAX_NICKNAME_LENGTH) {
+            throw new AccountValidationException(E_NICKNAMELENGTH);
+        } else {
+            this.mNickname = nickname;
+        }
     }
     public String getNickname() {
-        return nickname;
-    }
-    private void setPassword(String password) {
-        this.password = password;
-    }
-    public String getPassword() {
-        /* TODO: Use this method for decrypting encrypted password */
-        return password;
-    }
-    private void setRealname(String realname) {
-        this.realname = realname;
-    }
-    public String getRealname() {
-        return realname;
-    }
-    private void setHost(String host) {
-        this.host = host;
-    }
-    public String getHost() {
-        return host;
-    }
-    private void setPort(int port) {
-        this.port = port;
-    }
-    public int getPort() {
-        return port;
+        return mNickname;
     }
 }

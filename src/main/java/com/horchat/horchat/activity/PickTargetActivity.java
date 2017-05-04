@@ -107,9 +107,9 @@ public class PickTargetActivity extends AppCompatActivity {
     /* Get list of channel names available */
     public List<TargetItem> getUsernames() {
         List<TargetItem> usernames = new ArrayList<TargetItem>();
-        usernames.add(new TargetItem("User 1"));
-        usernames.add(new TargetItem("User 2"));
-        usernames.add(new TargetItem("User 3"));
+        usernames.add(new TargetItem("Account 1"));
+        usernames.add(new TargetItem("Account 2"));
+        usernames.add(new TargetItem("Account 3"));
         return usernames;
     }
 }
