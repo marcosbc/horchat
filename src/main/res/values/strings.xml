@@ -31,6 +31,7 @@
     <string name="dropdown_settings">Settings</string>
     <!-- Toast messages -->
     <string name="toast_logout">You have been logged out</string>
+    <string name="toast_newChannel">Channel name is invalid</string>
     <!-- Settings/preferences -->
     <string name="preference_about">About Horchat</string>
     <string name="preference_nickname">Nickname</string>
@@ -39,8 +40,16 @@
     <string name="navigation_channels">Channels</string>
     <string name="navigation_sendPrivateMessage">New private conversation</string>
     <string name="navigation_pms">Private conversations</string>
-    <string name="title_activity_pickChannel">Pick a channel</string>
-    <string name="title_activity_pickUser">Pick a user</string>
+    <string name="pickChannel_title">Pick a channel</string>
+    <string name="pickChannel_newChannel">Create a new channel</string>
+    <string name="pickChannel_newChannel_title">Create a new channel</string>
+    <string name="pickChannel_newChannel_hint">Title</string>
+    <string name="pickChannel_newChannel_create">Create</string>
+    <string name="pickChannel_newChannel_cancel">Cancel</string>
+    <string name="pickUser_title">Enter a username</string>
+    <string name="pickUser_hint">Username</string>
+    <string name="pickUser_choose">Go</string>
+    <string name="pickUser_cancel">Cancel</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

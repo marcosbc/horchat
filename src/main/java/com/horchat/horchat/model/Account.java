@@ -15,7 +15,6 @@ public class Account implements Serializable {
     public static final int E_NICKNAMELENGTH = 24;
     public static final int MAX_NICKNAME_LENGTH = 9;
     /* Private attributes */
-    private long mId;
     private String mUsername;
     private String mRealName;
     private String mNickname;
@@ -27,12 +26,6 @@ public class Account implements Serializable {
         setNickname(nickname.toString());
     }
     /* Getters and setters */
-    public void setId(long id) {
-        this.mId = id;
-    }
-    public long getId() {
-        return mId;
-    }
     private void setUsername(String username) throws AccountValidationException {
         if (username == null || username.isEmpty()) {
             throw new AccountValidationException(E_USERNAMEEMPTY);

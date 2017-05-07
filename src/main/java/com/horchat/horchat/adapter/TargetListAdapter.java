@@ -36,7 +36,7 @@ public class TargetListAdapter extends ArrayAdapter<TargetItem> {
             viewHolder = (ViewHolder) view.getTag();
         }
         // Update view contents
-        viewHolder.name.setText(model.getTargetName());
+        viewHolder.name.setText(model.getName());
         return view;
     }
     // View Holder class (check: View Holder pattern)

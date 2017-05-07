@@ -58,9 +58,11 @@ public class UserCredentialsFragment extends Fragment {
         activityIntent.putExtra(MainActivity.SERVER, mServer);
         activityIntent.putExtra(MainActivity.ACCOUNT, account);
         // Clear the navigation stack and start the new activity
+        // TODO: Check use of android:noHistory in Manifest
         activityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(activityIntent);
-        getActivity().finish();
+        // TODO: Check effect of uncommenting line
+        //getActivity().finish();
     }
 }

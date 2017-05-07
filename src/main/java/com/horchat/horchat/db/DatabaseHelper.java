@@ -177,7 +177,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (session != null) {
             Log.d(ID, "Setting current session");
             // Save in settings
-            setSetting(ID_CURRENT_SESSION, String.valueOf(session.getAccount().getId()));
+            setSetting(ID_CURRENT_SESSION, String.valueOf(session.getId()));
         } else {
             Log.d(ID, "Object 'session' is null");
         }
