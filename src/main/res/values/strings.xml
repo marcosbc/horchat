@@ -32,6 +32,7 @@
     <!-- Toast messages -->
     <string name="toast_logout">You have been logged out</string>
     <string name="toast_newChannel">Channel name is invalid</string>
+    <string name="toast_notOpenConversation">Could not open conversation</string>
     <!-- Settings/preferences -->
     <string name="preference_about">About Horchat</string>
     <string name="preference_nickname">Nickname</string>
@@ -46,6 +47,8 @@
     <string name="pickChannel_newChannel_hint">Title</string>
     <string name="pickChannel_newChannel_create">Create</string>
     <string name="pickChannel_newChannel_cancel">Cancel</string>
+    <string name="pickChannel_joined">Joined channel</string>
+    <string name="pickChannel_notJoined">Could not join channel</string>
     <string name="pickUser_title">Enter a username</string>
     <string name="pickUser_hint">Username</string>
     <string name="pickUser_choose">Go</string>

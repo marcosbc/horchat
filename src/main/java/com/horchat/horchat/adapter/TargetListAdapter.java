@@ -15,12 +15,19 @@ import com.horchat.horchat.model.TargetItem;
 import java.util.List;
 
 public class TargetListAdapter extends ArrayAdapter<TargetItem> {
+    public static final Integer NUM_TYPES = 2;
+
     private Context mContext;
     private List<TargetItem> mTargetList;
+
     public TargetListAdapter(Context context, List<TargetItem> targetList) {
         super(context, 0, targetList);
         this.mContext = context;
         this.mTargetList = targetList;
+    }
+    @Override
+    public int getViewTypeCount() {
+        return NUM_TYPES;
     }
     @Override
     public View getView(int pos, View view, ViewGroup parent) {

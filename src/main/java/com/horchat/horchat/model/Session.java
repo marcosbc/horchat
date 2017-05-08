@@ -16,15 +16,15 @@ public class Session implements Serializable {
     private long mId;
     private Account mAccount;
     private Server mServer;
-    Collection<String> mJoinedChannelNames;
+    List<Conversation> mConversations;
     public Session(long id, Account account, Server server) {
         mId = id;
         mAccount = account;
         mServer = server;
-        mJoinedChannelNames = new TreeSet<String>();
+        mConversations = new ArrayList<Conversation>();
     }
     public Session(Cursor cursor) {
-        mJoinedChannelNames = new TreeSet<String>();
+        mConversations = new ArrayList<Conversation>();
         // We're supposing that the fields were already validated
         cursor.moveToFirst();
         if (cursor.getColumnCount() > 0) {
@@ -64,19 +64,37 @@ public class Session implements Serializable {
     public Server getServer() {
         return mServer;
     }
-    public void joinChannel(String name) {
-        Log.d("horchat", "Joining channel: " + name);
-        mJoinedChannelNames.add(name);
+    public void newConversation(String name, int type) {
+        mConversations.add(new Conversation(name, type));
     }
-    public boolean didJoinChannel(String name) {
-        for (String channel: mJoinedChannelNames) {
-            if (channel.equals(name)) {
-                return true;
-            }
+    public boolean hasConversation(String name) {
+        if (getConversation(name) != null) {
+            return true;
         }
         return false;
     }
-    public Collection<String> getJoinedChannelNames() {
-        return mJoinedChannelNames;
+    public Conversation getConversation(String name) {
+        for (Conversation conversation: mConversations) {
+            if (conversation.getName().equals(name)) {
+                return conversation;
+            }
+        }
+        return null;
+    }
+    private List<Conversation> getConversationsByType(int type) {
+        List<Conversation> conversations = new ArrayList<Conversation>();
+        for (Conversation conversation : mConversations) {
+            if (conversation.getType() == type) {
+                conversations.add(conversation);
+            }
+        }
+        return conversations;
+    }
+    public Collection<String> getConversationNamesByType(int type) {
+        Collection<String> conversationNames = new TreeSet<String>();
+        for (Conversation conversation: getConversationsByType(type)) {
+            conversationNames.add(conversation.getName());
+        }
+        return conversationNames;
     }
 }

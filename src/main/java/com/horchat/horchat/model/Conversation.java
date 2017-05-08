@@ -6,14 +6,17 @@ public class Conversation {
     public static final int TYPE_QUERY = 1;
     public static final int TYPE_SERVER = 2;
     public static final int TYPE_CHANNEL = 3;
+    public static final int TYPE_USER = 4;
 
     // TODO: Implement conversation history
     private final String mName;
+    private final int mType;
     private int mStatus;
     private final LinkedList<Message> mBuffer;
 
-    public Conversation(String name) {
+    public Conversation(String name, int type) {
         mName = name.toLowerCase();
+        mType = type;
         mBuffer = new LinkedList<Message>();
     }
     public String getName() {
@@ -44,5 +47,8 @@ public class Conversation {
     }
     public int getStatus() {
         return mStatus;
+    }
+    public int getType() {
+        return mType;
     }
 }

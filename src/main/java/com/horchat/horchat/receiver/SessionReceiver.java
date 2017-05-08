@@ -4,12 +4,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.horchat.horchat.listener.ServerListener;
+import com.horchat.horchat.listener.SessionListener;
 
-public class ServerReceiver extends BroadcastReceiver {
-    private ServerListener mListener;
+public class SessionReceiver extends BroadcastReceiver {
+    private SessionListener mListener;
 
-    public ServerReceiver(ServerListener listener) {
+    public SessionReceiver(SessionListener listener) {
         mListener = listener;
     }
 

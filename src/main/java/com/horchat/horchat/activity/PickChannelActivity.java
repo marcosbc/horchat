@@ -168,7 +168,9 @@ public class PickChannelActivity extends AppCompatActivity implements ServiceCon
     public List<TargetItem> getChannelNames() {
         Log.d(ID, "Getting list of channels");
         List<TargetItem> channels = new ArrayList<TargetItem>();
-        channels.addAll(mBinder.getService().getClient(mSession).getChannelList());
+        for(Channel channel: mBinder.getService().getClient(mSession).getChannelList()) {
+            channels.add(channel);
+        }
         channels.add(new TargetItem(getString(R.string.pickChannel_newChannel)));
         return channels;
     }

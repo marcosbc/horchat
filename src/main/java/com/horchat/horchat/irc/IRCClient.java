@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.horchat.horchat.model.Account;
 import com.horchat.horchat.model.Channel;
+import com.horchat.horchat.model.Conversation;
 import com.horchat.horchat.model.Server;
 import com.horchat.horchat.model.ServerInfo;
 import com.horchat.horchat.model.Session;
@@ -12,6 +13,7 @@ import com.horchat.horchat.model.Session;
 import org.jibble.pircbot.PircBot;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,9 +66,10 @@ public class IRCClient extends PircBot {
     protected void onChannelInfo(String channel, int userCount, String topic) {
         Log.d("horchat", "Called onChannelInfo: " + channel + ", " + userCount + ", " + topic);
         Channel previousChannel = mChannelList.get(channel);
-        Channel newChannel = new Channel(channel, userCount, topic);
+        Channel newChannel = new Channel(channel);
         if (previousChannel != null) {
-            previousChannel.update(newChannel);
+            // TODO: Set channel attributes: User count, topic...
+            //previousChannel.update(newChannel);
         } else {
             mChannelList.put(channel, newChannel);
         }
@@ -78,7 +81,7 @@ public class IRCClient extends PircBot {
         if (login.equals(account.getUsername())) {
             Log.d(ID, "It was me!");
             listChannels();
-            mSession.joinChannel(channel);
+            mSession.newConversation(channel, Conversation.TYPE_CHANNEL);
         }
     }
     public List<Channel> getChannelList() {
@@ -88,5 +91,26 @@ public class IRCClient extends PircBot {
             channels.add(mChannelList.get(key));
         }
         return channels;
+    }
+    protected void onMessage(String channel, String sender, String login, String hostname,
+                             String message) {
+        mSession.newConversation(channel, Conversation.TYPE_CHANNEL);
+        Log.d(ID, "Got message from " + sender + " in " + channel + ": " + message);
+    }
+    protected void onPrivateMessage(String sender, String login, String hostname, String message) {
+        mSession.newConversation(sender, Conversation.TYPE_USER);
+        Log.d(ID, "Got private message from " + sender + ": " + message);
+    }
+    protected void onFinger(String sourceNick, String sourceLogin, String sourceHostname,
+                            String target) {
+        Log.d(ID, "Received FINGER: " + sourceNick);
+    }
+    protected void onPing(String sourceNick, String sourceLogin, String sourceHostname,
+                          String target, String pingValue) {
+        Log.d(ID, "Received PING: " + sourceNick);
+    }
+    protected void onVersion(String sourceNick, String sourceLogin, String sourceHostname,
+                             String target) {
+        Log.d(ID, "Received VERSION: " + sourceNick);
     }
 }

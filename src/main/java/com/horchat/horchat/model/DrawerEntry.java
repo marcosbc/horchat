@@ -6,12 +6,10 @@ public class DrawerEntry implements DrawerItem {
     private int mEntryIcon;
     private int mSpecialId;
     public DrawerEntry(String entryName, int entryIcon) {
-        super();
         mEntryName = entryName;
         mEntryIcon = entryIcon;
     }
     public DrawerEntry(String entryName) {
-        super();
         mEntryName = entryName;
         mEntryIcon = 0;
     }

@@ -1,5 +1,5 @@
 package com.horchat.horchat.listener;
 
-public interface ServerListener {
+public interface SessionListener {
     void onStatusUpdate();
 }

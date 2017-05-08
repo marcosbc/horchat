@@ -7,11 +7,9 @@ public class Channel extends TargetItem {
     private String mName;
     private int mUserCount;
     private String mTopic;
-    public Channel(String name, int userCount, String topic) {
+    public Channel(String name) {
         super(name);
         mName = name;
-        mUserCount = userCount;
-        mTopic = topic;
         mType = TargetItem.TYPE_CHANNEL;
     }
     public String getName() {
