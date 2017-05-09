@@ -4,6 +4,8 @@
     <string name="placeholder_title">Horchat</string>
     <string name="placeholder_username">_USERNAME_</string>
     <string name="placeholder_item">_ITEM_</string>
+    <string name="placeholder_text">_TEXT_</string>
+    <string name="placeholder_date">_DATE_</string>
     <!-- Toolbar -->
     <string name="toolbar_search">Search</string>
     <string name="toolbar_options">Menu</string>
@@ -37,6 +39,7 @@
     <string name="preference_about">About Horchat</string>
     <string name="preference_nickname">Nickname</string>
     <!-- Navigation -->
+    <string name="navigation_username">%1$s (%2$s)</string>
     <string name="navigation_joinChannel">Join a channel</string>
     <string name="navigation_channels">Channels</string>
     <string name="navigation_sendPrivateMessage">New private conversation</string>
@@ -53,7 +56,8 @@
     <string name="pickUser_hint">Username</string>
     <string name="pickUser_choose">Go</string>
     <string name="pickUser_cancel">Cancel</string>
-
+    <!-- Conversation -->
+    <string name="conversation_message">Message</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

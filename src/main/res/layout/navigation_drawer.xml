@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#EEE">
+
     <ListView
         android:id="@+id/drawer_list"
         android:layout_width="match_parent"

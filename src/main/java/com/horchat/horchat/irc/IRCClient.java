@@ -7,13 +7,11 @@ import com.horchat.horchat.model.Account;
 import com.horchat.horchat.model.Channel;
 import com.horchat.horchat.model.Conversation;
 import com.horchat.horchat.model.Server;
-import com.horchat.horchat.model.ServerInfo;
 import com.horchat.horchat.model.Session;
 
 import org.jibble.pircbot.PircBot;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,11 +53,13 @@ public class IRCClient extends PircBot {
                 IRCBroadcastHandler.createServerIntent(IRCBroadcastHandler.SERVER_UPDATE)
         );
         // Create broadcast message for successful login
+        /*
         Intent createConversationIntent = IRCBroadcastHandler.createConversationIntent(
                 IRCBroadcastHandler.CONVERSATION_MESSAGE,
                 ServerInfo.ALL_CONVERSATIONS
         );
         mService.sendBroadcast(createConversationIntent);
+        */
         Log.d(ID, "Sending message");
         joinChannel("#genetest");
     }

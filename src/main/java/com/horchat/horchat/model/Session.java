@@ -16,15 +16,16 @@ public class Session implements Serializable {
     private long mId;
     private Account mAccount;
     private Server mServer;
-    List<Conversation> mConversations;
+    private List<Conversation> mConversations;
+    private Conversation mCurrentConversation;
+    private Conversation mServerConversation;
     public Session(long id, Account account, Server server) {
         mId = id;
         mAccount = account;
         mServer = server;
-        mConversations = new ArrayList<Conversation>();
+        populateDefaultValues();
     }
     public Session(Cursor cursor) {
-        mConversations = new ArrayList<Conversation>();
         // We're supposing that the fields were already validated
         cursor.moveToFirst();
         if (cursor.getColumnCount() > 0) {
@@ -54,6 +55,12 @@ public class Session implements Serializable {
                 // TODO: Improve this
             }
         }
+        populateDefaultValues();
+    }
+    private void populateDefaultValues() {
+        mConversations = new ArrayList<Conversation>();
+        mCurrentConversation = null;
+        mServerConversation = new Conversation(mServer.getHost(), Conversation.TYPE_SERVER);
     }
     public long getId() {
         return mId;
@@ -96,5 +103,26 @@ public class Session implements Serializable {
             conversationNames.add(conversation.getName());
         }
         return conversationNames;
+    }
+    public void setCurrentConversation(Conversation conversation) {
+        mCurrentConversation = conversation;
+    }
+    public Conversation getCurrentConversation() {
+        return mCurrentConversation;
+    }
+    public boolean isConversationSelected(String name, int type) {
+        Conversation currentConversation = mCurrentConversation;
+        if (currentConversation == null) {
+            // If null, use the server conversation
+            currentConversation = mServerConversation;
+        }
+        if (currentConversation.getName().equals(name) &&
+                currentConversation.getType() == type) {
+            return true;
+        }
+        return false;
+    }
+    public Conversation getServerConversation() {
+        return mServerConversation;
     }
 }

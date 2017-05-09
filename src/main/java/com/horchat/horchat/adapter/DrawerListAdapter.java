@@ -1,6 +1,7 @@
 package com.horchat.horchat.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -67,11 +68,13 @@ public class DrawerListAdapter extends ArrayAdapter<DrawerItem> {
             viewHolder = new ViewHolder();
             view = getInflatedLayoutForType(type);
             if (type == TYPE_SECTION) {
+                viewHolder.entry = null;
                 viewHolder.name = (TextView) view.findViewById(R.id.title);
                 viewHolder.icon = null;
                 // Sections cannot be clicked, for now
                 view.setOnClickListener(null);
             } else {
+                viewHolder.entry = (View) view.findViewById(R.id.list_item_entry);
                 viewHolder.name = (TextView) view.findViewById(R.id.list_item_entry_text);
                 viewHolder.icon = (ImageView) view.findViewById(R.id.list_item_entry_icon);
             }
@@ -84,10 +87,24 @@ public class DrawerListAdapter extends ArrayAdapter<DrawerItem> {
         if (type == TYPE_ENTRY_WITH_ICON) {
             viewHolder.icon.setImageResource(((DrawerEntry) model).getItemImage());
         }
+        if (isSelected(pos) && type != TYPE_SECTION) {
+            // TODO: Find a better way of doing this
+            viewHolder.entry.setBackgroundColor(Color.parseColor("#DDDDDD"));
+        }
         return view;
+    }
+    private boolean isSelected(int pos) {
+        if (!mItemList.get(pos).isSection()) {
+            DrawerEntry entry = (DrawerEntry) mItemList.get(pos);
+            if (entry.isSelected()) {
+                return true;
+            }
+        }
+        return false;
     }
     // View Holder class (check: View Holder pattern)
     private static class ViewHolder {
+        View entry;
         TextView name;
         ImageView icon;
     }

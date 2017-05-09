@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
@@ -21,12 +22,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.horchat.horchat.R;
 import com.horchat.horchat.adapter.DrawerListAdapter;
 import com.horchat.horchat.db.DatabaseHelper;
+import com.horchat.horchat.fragment.ConversationFragment;
 import com.horchat.horchat.irc.IRCBinder;
 import com.horchat.horchat.irc.IRCBroadcastHandler;
 import com.horchat.horchat.irc.IRCService;
@@ -50,9 +53,11 @@ public class MainActivity extends AppCompatActivity
 
     public static final String ID = "horchat";
 
+    public static final String CONVERSATION_FRAGMENT = "ConversationFragment";
     public static final String ID_SESSION = "session";
     public static final String SERVER = "MainActivity__server";
     public static final String ACCOUNT = "MainActivity__account";
+    public static final String CONVERSATION = "MainActivity__conversation";
 
     public static final int PICK_CHANNEL_REQUEST = 101;
     public static final int PICK_USER_REQUEST = 102;
@@ -130,6 +135,10 @@ public class MainActivity extends AppCompatActivity
                 onNavigationDrawerItemClick(mDrawerList.getAdapter().getItem(position));
             }
         });
+        // Update the username in the navigation drawer
+        TextView username = (TextView) drawerHeader.findViewById(R.id.navigation_username);
+        username.setText(getString(R.string.navigation_username,
+                mSession.getAccount().getNickname(), mSession.getAccount().getUsername()));
     }
 
     @Override
@@ -184,6 +193,12 @@ public class MainActivity extends AppCompatActivity
         } else {
             onStatusUpdate();
         }
+        // Open current conversation
+        if (mSession.getCurrentConversation() != null) {
+            openConversation(mSession.getCurrentConversation());
+        } else {
+            openConversation(mSession.getServerConversation());
+        }
     }
 
     @Override
@@ -234,7 +249,8 @@ public class MainActivity extends AppCompatActivity
             case R.id.action_logout:
                 /* Perform logout of the user */
                 Log.d(ID, "Toolbar: Logging out");
-                Toast.makeText(getApplicationContext(), R.string.toast_logout, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.toast_logout, Toast.LENGTH_SHORT)
+                        .show();
                 logout();
                 break;
             default:
@@ -261,27 +277,35 @@ public class MainActivity extends AppCompatActivity
     /* Populate navigation drawer */
     private void populateDrawer() {
         LayoutInflater inflater = getLayoutInflater();
-        // Channels
         List<DrawerItem> drawerItemList = new ArrayList<DrawerItem>();
+        // Conversation with server (for information messages)
+        String serverName = mSession.getServerConversation().getName();
+        drawerItemList.add(new DrawerEntry(serverName, R.drawable.ic_menu_server,
+                mSession.isConversationSelected(serverName, Conversation.TYPE_SERVER)));
+        // Channels
         drawerItemList.add(new DrawerSection(getResources().getString(R.string.navigation_channels)));
         // Populate channel list
-        Collection<String> channelConv = mSession.getConversationNamesByType(Conversation.TYPE_CHANNEL);
-        if (channelConv != null) {
-            for (String channelName: channelConv) {
-                drawerItemList.add(new DrawerEntry(channelName, 0));
+        Collection<String> channels =
+                mSession.getConversationNamesByType(Conversation.TYPE_CHANNEL);
+        if (channels != null) {
+            for (String channelName: channels) {
+                drawerItemList.add(new DrawerEntry(channelName, 0,
+                        mSession.isConversationSelected(channelName, Conversation.TYPE_CHANNEL)));
             }
         }
-        drawerItemList.add(new DrawerEntry(getResources().getString(R.string.navigation_joinChannel), R.drawable.ic_menu_allfriends));
+        drawerItemList.add(new DrawerEntry(getResources().getString(R.string.navigation_joinChannel), R.drawable.ic_menu_join_channel));
         // Private messages
         drawerItemList.add(new DrawerSection(getResources().getString(R.string.navigation_pms)));
         // Populate private messages (by default no PM open)
         Collection<String> userConv = mSession.getConversationNamesByType(Conversation.TYPE_USER);
         if (userConv != null) {
             for (String username: userConv) {
-                drawerItemList.add(new DrawerEntry(username, 0));
+                drawerItemList.add(new DrawerEntry(username, 0,
+                        mSession.isConversationSelected(username, Conversation.TYPE_USER)));
             }
         }
-        drawerItemList.add(new DrawerEntry(getResources().getString(R.string.navigation_sendPrivateMessage), R.drawable.ic_menu_start_conversation));
+        drawerItemList.add(new DrawerEntry(getString(R.string.navigation_sendPrivateMessage),
+                R.drawable.ic_menu_user_conversation));
         // Set list adapter
         mDrawerList.setAdapter(new DrawerListAdapter(getApplicationContext(), drawerItemList));
     }
@@ -302,12 +326,12 @@ public class MainActivity extends AppCompatActivity
                 // Clicked on "Open new conversation"
                 pickUserDialog();
             } else {
-                Log.w(ID, "Wrong item clicked: " + itemName);
+                // Server conversation clicked
+                openConversation(mSession.getServerConversation());
             }
         } else {
             Log.d(ID, "Clicked on item: " + itemName);
             openConversation(mSession.getConversation(itemName));
-            mDrawerLayout.closeDrawers();
         }
     }
 
@@ -342,8 +366,6 @@ public class MainActivity extends AppCompatActivity
         Toast.makeText(getApplicationContext(), "Selected user " + name, Toast.LENGTH_SHORT).show();
         // TODO: Check if user exists
         mSession.newConversation(name, Conversation.TYPE_USER);
-        mDrawerLayout.closeDrawers();
-        populateDrawer();
         // Open the new conversation
         openConversation(mSession.getConversation(name));
     }
@@ -367,32 +389,47 @@ public class MainActivity extends AppCompatActivity
             message = getString(R.string.pickChannel_notJoined) + " " + name;
         } else {
             message = getString(R.string.pickChannel_joined) + " " + name;
-            mDrawerLayout.closeDrawers();
-            populateDrawer();
             openConversation(mSession.getConversation(name));
         }
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     /* Opens a conversation */
-    public void openConversation(final Conversation conversation) {
+    public void openConversation(Conversation conversation) {
         if (conversation != null) {
+            // TODO: Remove
+            final String name = conversation.getName();
+            final int type = conversation.getType();
             new Thread() {
                 @Override
                 public void run() {
-                    if (conversation.getType() == conversation.TYPE_USER) {
-                        mBinder.getService().getClient(mSession).sendCTCPCommand(conversation.getName(), "PING");
-                        mBinder.getService().getClient(mSession).sendCTCPCommand(conversation.getName(), "FINGER");
-                        mBinder.getService().getClient(mSession).sendCTCPCommand(conversation.getName(), "VERSION");
+                    if (type == Conversation.TYPE_USER) {
+                        mBinder.getService().getClient(mSession).sendCTCPCommand(name, "PING");
+                        mBinder.getService().getClient(mSession).sendCTCPCommand(name, "FINGER");
+                        mBinder.getService().getClient(mSession).sendCTCPCommand(name, "VERSION");
                     }
-                    mBinder.getService().getClient(mSession).sendMessage(conversation.getName(), "hola!!!");
+                    mBinder.getService().getClient(mSession).sendMessage(name, "hola!!!");
                 }
             }.start();
+            // Set current conversation
             mToolbar.setTitle(conversation.getName());
+            // TODO: Set in db
+            mSession.setCurrentConversation(conversation);
+            // Create and attach fragment
+            Bundle args = new Bundle();
+            args.putSerializable(CONVERSATION, conversation);
+            // Instantiate Conversation fragment
+            ConversationFragment conversationFragment = new ConversationFragment();
+            conversationFragment.setArguments(args);
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.content, conversationFragment, CONVERSATION_FRAGMENT);
+            transaction.commit();
         } else {
             Toast.makeText(getApplicationContext(), R.string.toast_notOpenConversation,
                     Toast.LENGTH_SHORT).show();
         }
+        mDrawerLayout.closeDrawers();
+        populateDrawer();
     }
 
     /* Logs a user out, and starts the login-related activity */

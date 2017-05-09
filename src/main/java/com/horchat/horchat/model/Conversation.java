@@ -1,45 +1,47 @@
 package com.horchat.horchat.model;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
-public class Conversation {
-    public static final int TYPE_QUERY = 1;
-    public static final int TYPE_SERVER = 2;
-    public static final int TYPE_CHANNEL = 3;
-    public static final int TYPE_USER = 4;
+public class Conversation implements Serializable {
+    public static final int TYPE_SERVER = 1;
+    public static final int TYPE_CHANNEL = 2;
+    public static final int TYPE_USER = 3;
 
     // TODO: Implement conversation history
     private final String mName;
     private final int mType;
     private int mStatus;
-    private final LinkedList<Message> mBuffer;
+    private final List<Message> mMessages;
 
     public Conversation(String name, int type) {
         mName = name.toLowerCase();
         mType = type;
-        mBuffer = new LinkedList<Message>();
+        mMessages = new ArrayList<Message>();
     }
     public String getName() {
         return mName;
     }
-    public LinkedList<Message> getBuffer() {
-        return mBuffer;
+    public List<Message> getMessages() {
+        return mMessages;
     }
     public void addMessage(Message message) {
         // Append message to the beginning of the list
-        mBuffer.add(0, message);
+        mMessages.add(message);
     }
     public Message getNewMessage() {
-        int lastElement = mBuffer.size() - 1;
-        Message message = mBuffer.get(lastElement);
-        mBuffer.remove(lastElement);
+        int lastElement = mMessages.size() - 1;
+        Message message = mMessages.get(lastElement);
+        mMessages.remove(lastElement);
         return message;
     }
     public boolean hasNewMessage() {
-        return mBuffer.size() > 0;
+        return mMessages.size() > 0;
     }
-    public void clearBuffer() {
-        mBuffer.clear();
+    public void clearMessages() {
+        mMessages.clear();
     }
     public void setStatus(int status) {
         // TODO: Validate status change

@@ -5,6 +5,12 @@ public class DrawerEntry implements DrawerItem {
     private String mEntryName;
     private int mEntryIcon;
     private int mSpecialId;
+    private boolean mSelected;
+    public DrawerEntry(String entryName, int entryIcon, boolean selected) {
+        mEntryName = entryName;
+        mEntryIcon = entryIcon;
+        mSelected = selected;
+    }
     public DrawerEntry(String entryName, int entryIcon) {
         mEntryName = entryName;
         mEntryIcon = entryIcon;
@@ -30,5 +36,8 @@ public class DrawerEntry implements DrawerItem {
     }
     public boolean hasIcon() {
         return mEntryIcon != 0;
+    }
+    public boolean isSelected() {
+        return mSelected;
     }
 }

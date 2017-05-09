@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/conversation_bottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="6dp"
+        android:layout_alignParentBottom="true"
+        android:background="#EEEEEE">
+
+        <EditText
+            android:id="@+id/conversation_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:maxLines="1"
+            android:hint="@string/conversation_message"/>
+
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/conversation_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/conversation_bottomBar"
+        android:choiceMode="none"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp"
+        android:transcriptMode="alwaysScroll"
+        android:stackFromBottom="true"/>
+
+</RelativeLayout>
