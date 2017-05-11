@@ -71,8 +71,10 @@ public class Session implements Serializable {
     public Server getServer() {
         return mServer;
     }
-    public void newConversation(String name, int type) {
-        mConversations.add(new Conversation(name, type));
+    public Conversation newConversation(String name, int type) {
+        Conversation conversation = new Conversation(name, type);
+        mConversations.add(conversation);
+        return conversation;
     }
     public boolean hasConversation(String name) {
         if (getConversation(name) != null) {

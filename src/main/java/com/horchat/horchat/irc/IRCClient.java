@@ -84,13 +84,15 @@ public class IRCClient extends PircBot {
     }
     @Override
     protected void onJoin(String channel, String sender, String login, String hostname) {
-        // Refresh channel list
-        Account account = mSession.getAccount();
         Log.d(ID, "User joined " + channel + ": " + login + " " + sender + " " + hostname);
-        if (login.equals(account.getUsername())) {
-            listChannels();
-            mSession.newConversation(channel, Conversation.TYPE_CHANNEL);
-        }
+        Intent intent = IRCBroadcastHandler.createConversationIntent(
+                IRCBroadcastHandler.CONVERSATION_NEW);
+        intent.putExtra(Conversation.TYPE, Conversation.TYPE_CHANNEL);
+        intent.putExtra(Conversation.TITLE, channel);
+        intent.putExtra(Conversation.SENDER, sender);
+        intent.putExtra(Conversation.LOGIN, login);
+        intent.putExtra(Conversation.HOSTNAME, hostname);
+        mService.sendBroadcast(intent);
     }
     @Override
     protected void onMessage(String channel, String sender, String login, String hostname,

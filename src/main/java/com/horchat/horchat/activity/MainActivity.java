@@ -35,6 +35,7 @@ import com.horchat.horchat.irc.IRCBroadcastHandler;
 import com.horchat.horchat.irc.IRCService;
 import com.horchat.horchat.listener.ConversationListener;
 import com.horchat.horchat.listener.SessionListener;
+import com.horchat.horchat.model.Account;
 import com.horchat.horchat.model.Conversation;
 import com.horchat.horchat.model.DrawerEntry;
 import com.horchat.horchat.model.DrawerItem;
@@ -71,6 +72,7 @@ public class MainActivity extends AppCompatActivity
     private ListView mDrawerList;
     private SessionReceiver mSessionReceiver;
     private ConversationReceiver mConversationReceiver;
+    private String mCurrentConversation;
 
     private IRCBinder mBinder;
 
@@ -141,6 +143,7 @@ public class MainActivity extends AppCompatActivity
         TextView username = (TextView) drawerHeader.findViewById(R.id.navigation_username);
         username.setText(getString(R.string.navigation_username,
                 mSession.getAccount().getNickname(), mSession.getAccount().getUsername()));
+        mCurrentConversation = null;
     }
 
     @Override
@@ -196,10 +199,13 @@ public class MainActivity extends AppCompatActivity
             onStatusUpdate();
         }
         // Open current conversation
-        if (mSession.getCurrentConversation() != null) {
-            openConversation(mSession.getCurrentConversation());
-        } else {
-            openConversation(mSession.getServerConversation());
+        Conversation currentConversation = mSession.getCurrentConversation();
+        if (currentConversation == null) {
+            currentConversation = mSession.getServerConversation();
+        }
+        openConversation(currentConversation);
+        if (mCurrentConversation == null) {
+            mCurrentConversation = currentConversation.getName();
         }
     }
 
@@ -375,6 +381,7 @@ public class MainActivity extends AppCompatActivity
 
     /* Validate channel with server and change view to channel */
     public void pickChannel(final String name) {
+        mCurrentConversation = name;
         // TODO: Support channels with keys
         new Thread() {
             @Override
@@ -382,19 +389,6 @@ public class MainActivity extends AppCompatActivity
                 mBinder.getService().getClient(mSession).joinChannel(name);
             }
         }.start();
-        // TODO: Add some sort of callback
-        try {
-            Thread.sleep(1000);
-        } catch (Exception e) {
-        }
-        String message = null;
-        if (!mSession.hasConversation(name)) {
-            message = getString(R.string.pickChannel_notJoined) + " " + name;
-        } else {
-            message = getString(R.string.pickChannel_joined) + " " + name;
-            openConversation(mSession.getConversation(name));
-        }
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     /* Opens a conversation */
@@ -487,10 +481,20 @@ public class MainActivity extends AppCompatActivity
         String title = args.getString(Conversation.TITLE);
         String sender = args.getString(Conversation.SENDER);
         String text = args.getString(Conversation.MESSAGE);
-        mSession.newConversation(title, type);
+        /* Create the new conversation */
+        Conversation conversation = mSession.newConversation(title, type);
         populateDrawer();
-        /* Add the new message */
-        onConversationMessage(args);
+        if (text != null) {
+            /* If we received a message with the action */
+            onConversationMessage(args);
+        }
+        /* Check if we were opening the conversation on our side */
+        Account account = mSession.getAccount();
+        Log.d(ID, "check 1 (" + account.getNickname() + " vs " + sender + "): " + account.getNickname().equals(sender));
+        Log.d(ID, "check 2 (" + title + " vs " + mCurrentConversation + "): " + title.equals(mCurrentConversation));
+        if (account.getNickname().equals(sender) && title.equals(mCurrentConversation)) {
+            openConversation(conversation);
+        }
     }
 
     public void onRemoveConversation(Bundle args) {
