@@ -52,11 +52,14 @@ public class ConversationFragment extends Fragment {
         mMessageList.setAdapter(mAdapter);
         return view;
     }
-    public void sendMessage() {
+    private void sendMessage() {
         // Send message
-        mConversation.addMessage(new Message(mInput.getText().toString(), "marcos", new Date()));
+        String message = mInput.getText().toString();
+        ((MainActivity) getActivity()).sendMessage(message);
         // Clear input
         mInput.getText().clear();
+    }
+    public void refreshMessageList() {
         // Notify list adapter
         mAdapter.notifyDataSetChanged();
     }

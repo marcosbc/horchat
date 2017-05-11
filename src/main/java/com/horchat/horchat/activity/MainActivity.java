@@ -39,6 +39,7 @@ import com.horchat.horchat.model.Conversation;
 import com.horchat.horchat.model.DrawerEntry;
 import com.horchat.horchat.model.DrawerItem;
 import com.horchat.horchat.model.DrawerSection;
+import com.horchat.horchat.model.Message;
 import com.horchat.horchat.model.Server;
 import com.horchat.horchat.model.Session;
 import com.horchat.horchat.receiver.ConversationReceiver;
@@ -46,6 +47,7 @@ import com.horchat.horchat.receiver.SessionReceiver;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
@@ -276,6 +278,7 @@ public class MainActivity extends AppCompatActivity
 
     /* Populate navigation drawer */
     private void populateDrawer() {
+        mDrawerLayout.closeDrawers();
         LayoutInflater inflater = getLayoutInflater();
         List<DrawerItem> drawerItemList = new ArrayList<DrawerItem>();
         // Conversation with server (for information messages)
@@ -397,20 +400,6 @@ public class MainActivity extends AppCompatActivity
     /* Opens a conversation */
     public void openConversation(Conversation conversation) {
         if (conversation != null) {
-            // TODO: Remove
-            final String name = conversation.getName();
-            final int type = conversation.getType();
-            new Thread() {
-                @Override
-                public void run() {
-                    if (type == Conversation.TYPE_USER) {
-                        mBinder.getService().getClient(mSession).sendCTCPCommand(name, "PING");
-                        mBinder.getService().getClient(mSession).sendCTCPCommand(name, "FINGER");
-                        mBinder.getService().getClient(mSession).sendCTCPCommand(name, "VERSION");
-                    }
-                    mBinder.getService().getClient(mSession).sendMessage(name, "hola!!!");
-                }
-            }.start();
             // Set current conversation
             mToolbar.setTitle(conversation.getName());
             // TODO: Set in db
@@ -428,7 +417,6 @@ public class MainActivity extends AppCompatActivity
             Toast.makeText(getApplicationContext(), R.string.toast_notOpenConversation,
                     Toast.LENGTH_SHORT).show();
         }
-        mDrawerLayout.closeDrawers();
         populateDrawer();
     }
 
@@ -457,25 +445,81 @@ public class MainActivity extends AppCompatActivity
         finish();
     }
 
-    public void onConversationMessage(String target) {
-        Log.d(ID, "Conversation message: " + target);
+    public void sendMessage(final String text) {
+        Conversation conversation = mSession.getCurrentConversation();
+        if (conversation != null && conversation != mSession.getServerConversation()) {
+            String sender = mSession.getAccount().getNickname();
+            final String destination = conversation.getName();
+            final int type = conversation.getType();
+            new Thread() {
+                @Override
+                public void run() {
+                    mBinder.getService().getClient(mSession).sendMessage(destination, text);
+                }
+            }.start();
+            conversation.addMessage(new Message(text, sender, new Date()));
+            refreshMessageList();
+        }
     }
 
-    public void onNewConversation(String target) {
-        Log.d(ID, "New conversation: " + target);
+    private void refreshMessageList() {
+        ConversationFragment fragment =
+                (ConversationFragment) getSupportFragmentManager().findFragmentById(R.id.content);
+        fragment.refreshMessageList();
     }
 
-    public void onRemoveConversation(String target) {
-        Log.d(ID, "Remove conversation: " + target);
+    public void onConversationMessage(Bundle args) {
+        Log.d(ID, "Conversation message");
+        String title = args.getString(Conversation.TITLE);
+        String sender = args.getString(Conversation.SENDER);
+        String text = args.getString(Conversation.MESSAGE);
+        Conversation conversation = mSession.getConversation(title);
+        if (conversation != null) {
+            conversation.addMessage(new Message(text, sender, new Date()));
+        }
+        refreshMessageList();
     }
 
-    public void onTopicChanged(String target) {
-        Log.d(ID, "Topic changed: " + target);
+    public void onNewConversation(Bundle args) {
+        Log.d(ID, "New conversation");
+        /* Create the new conversation */
+        int type = args.getInt(Conversation.TYPE);
+        String title = args.getString(Conversation.TITLE);
+        String sender = args.getString(Conversation.SENDER);
+        String text = args.getString(Conversation.MESSAGE);
+        mSession.newConversation(title, type);
+        populateDrawer();
+        /* Add the new message */
+        onConversationMessage(args);
+    }
+
+    public void onRemoveConversation(Bundle args) {
+        Log.d(ID, "Remove conversation");
+        String channel = args.getString(Conversation.CHANNEL);
+        String kickerNick = args.getString(Conversation.KICKERNICK);
+        String kickerLogin = args.getString(Conversation.KICKERLOGIN);
+        String kickerHost = args.getString(Conversation.KICKERHOST);
+        String recipient = args.getString(Conversation.RECIPIENT);
+        String reason = args.getString(Conversation.REASON);
+        if (recipient.equals(mSession.getAccount().getNickname())) {
+            /* We were kicked from the channel */
+            /* If we were on that conversation, change to the default one */
+            if (mSession.getCurrentConversation() == mSession.getConversation(channel)) {
+                openConversation(mSession.getServerConversation());
+            }
+            /* Remove the object */
+            mSession.closeConversation(channel);
+            populateDrawer();
+        }
+    }
+
+    public void onTopicChanged(Bundle args) {
+        Log.d(ID, "Topic changed");
+        /* TODO */
     }
 
     public void onStatusUpdate() {
         Server server = mSession.getServer();
-        Log.d(ID, "Status update with connected status " + server.isConnected());
         if (server.isConnected()) {
             // Connection is OK
             Log.d(ID, "Server is OK");
@@ -483,9 +527,5 @@ public class MainActivity extends AppCompatActivity
             // Connection was lost - Reconnect
             Log.d(ID, "Server is DOWN");
         }
-    }
-
-    public void sendMessage() {
-        // TODO - Implement sendMessage logic
     }
 }

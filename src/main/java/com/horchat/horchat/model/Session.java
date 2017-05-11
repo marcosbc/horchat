@@ -125,4 +125,13 @@ public class Session implements Serializable {
     public Conversation getServerConversation() {
         return mServerConversation;
     }
+    public boolean closeConversation(String title) {
+        for (Conversation conversation: mConversations) {
+            if (conversation.getName().equals(title)) {
+                mConversations.remove(conversation);
+                return true;
+            }
+        }
+        return false;
+    }
 }

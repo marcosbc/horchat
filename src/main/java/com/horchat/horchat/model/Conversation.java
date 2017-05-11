@@ -6,9 +6,28 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Conversation implements Serializable {
-    public static final int TYPE_SERVER = 1;
-    public static final int TYPE_CHANNEL = 2;
-    public static final int TYPE_USER = 3;
+    /* Broadcasting-related */
+    public static final String TYPE        = "Conversation__TYPE";
+    public static final String TITLE       = "Conversation__TITLE";
+    public static final String SENDER      = "Conversation__SENDER";
+    public static final String LOGIN       = "Conversation__LOGIN";
+    public static final String HOSTNAME    = "Conversation__HOSTNAME";
+    public static final String MESSAGE     = "Conversation__MESSAGE";
+    public static final String TARGET      = "Conversation__TARGET";
+    public static final String TOPIC       = "Conversation__TOPIC";
+    public static final String SETBY       = "Conversation__SETBY";
+    public static final String DATE        = "Conversation__DATE";
+    public static final String CHANGED     = "Conversation__CHANGED";
+    public static final String CHANNEL     = "Conversation__CHANNEL";
+    public static final String KICKERNICK  = "Conversation__KICKERNICK";
+    public static final String KICKERLOGIN = "Conversation__KICKERLOGIN";
+    public static final String KICKERHOST  = "Conversation__KICKERHOST";
+    public static final String RECIPIENT   = "Conversation__RECIPIENT";
+    public static final String REASON      = "Conversation__REASON";
+    /* Used for determining conversation type */
+    public static final int TYPE_SERVER    = 1;
+    public static final int TYPE_CHANNEL   = 2;
+    public static final int TYPE_USER      = 3;
 
     // TODO: Implement conversation history
     private final String mName;
