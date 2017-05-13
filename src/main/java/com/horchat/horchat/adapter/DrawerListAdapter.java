@@ -2,6 +2,7 @@ package com.horchat.horchat.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -84,13 +85,20 @@ public class DrawerListAdapter extends ArrayAdapter<DrawerItem> {
         }
         // Update view contents
         viewHolder.name.setText(model.getItemName());
-        if (type == TYPE_ENTRY_WITH_ICON) {
-            viewHolder.icon.setImageResource(((DrawerEntry) model).getItemImage());
+        if (type != TYPE_SECTION) {
+            DrawerEntry conversation = (DrawerEntry) model;
+            if (type == TYPE_ENTRY_WITH_ICON) {
+                viewHolder.icon.setImageResource(conversation.getItemImage());
+            }
+            if (isSelected(pos)) {
+                // TODO: Find a better way of doing this
+                viewHolder.entry.setBackgroundColor(Color.parseColor("#DDDDDD"));
+            }
+            if (!conversation.isRead()) {
+                viewHolder.name.setTypeface(viewHolder.name.getTypeface(), Typeface.BOLD);
+            }
         }
-        if (isSelected(pos) && type != TYPE_SECTION) {
-            // TODO: Find a better way of doing this
-            viewHolder.entry.setBackgroundColor(Color.parseColor("#DDDDDD"));
-        }
+
         return view;
     }
     private boolean isSelected(int pos) {

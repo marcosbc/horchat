@@ -1,23 +1,25 @@
 package com.horchat.horchat.model;
 
 public class DrawerEntry implements DrawerItem {
-    private int mEntryType;
     private String mEntryName;
     private int mEntryIcon;
-    private int mSpecialId;
     private boolean mSelected;
-    public DrawerEntry(String entryName, int entryIcon, boolean selected) {
+    private boolean mIsRead;
+    public DrawerEntry(String entryName, int entryIcon, boolean isRead, boolean selected) {
         mEntryName = entryName;
         mEntryIcon = entryIcon;
+        mIsRead = isRead;
         mSelected = selected;
     }
     public DrawerEntry(String entryName, int entryIcon) {
         mEntryName = entryName;
         mEntryIcon = entryIcon;
+        mIsRead = true;
     }
     public DrawerEntry(String entryName) {
         mEntryName = entryName;
         mEntryIcon = 0;
+        mIsRead = true;
     }
     public String getItemName() {
         return mEntryName;
@@ -39,5 +41,8 @@ public class DrawerEntry implements DrawerItem {
     }
     public boolean isSelected() {
         return mSelected;
+    }
+    public boolean isRead() {
+        return mIsRead;
     }
 }

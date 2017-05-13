@@ -34,11 +34,13 @@ public class Conversation implements Serializable {
     private final int mType;
     private int mStatus;
     private final List<Message> mMessages;
+    private boolean mIsRead;
 
     public Conversation(String name, int type) {
         mName = name.toLowerCase();
         mType = type;
         mMessages = new ArrayList<Message>();
+        mIsRead = true;
     }
     public String getName() {
         return mName;
@@ -71,5 +73,14 @@ public class Conversation implements Serializable {
     }
     public int getType() {
         return mType;
+    }
+    public boolean isRead() {
+        return mIsRead;
+    }
+    public void markAsUnread() {
+        mIsRead = false;
+    }
+    public void markAsRead() {
+        mIsRead = true;
     }
 }

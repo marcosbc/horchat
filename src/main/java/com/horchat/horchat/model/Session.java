@@ -124,6 +124,17 @@ public class Session implements Serializable {
         }
         return false;
     }
+    public boolean isConversationRead(String name, int type) {
+        Conversation conversation = getConversation(name);
+        if (conversation != null) {
+            /* User conversation or channel */
+            return conversation.isRead();
+        } else if (getServerConversation().getName().equals(name)) {
+            /* Server conversation */
+            return true;
+        }
+        return false;
+    }
     public Conversation getServerConversation() {
         return mServerConversation;
     }

@@ -290,6 +290,7 @@ public class MainActivity extends AppCompatActivity
         // Conversation with server (for information messages)
         String serverName = mSession.getServerConversation().getName();
         drawerItemList.add(new DrawerEntry(serverName, R.drawable.ic_menu_server,
+                mSession.isConversationRead(serverName, Conversation.TYPE_SERVER),
                 mSession.isConversationSelected(serverName, Conversation.TYPE_SERVER)));
         // Channels
         drawerItemList.add(new DrawerSection(getResources().getString(R.string.navigation_channels)));
@@ -299,6 +300,7 @@ public class MainActivity extends AppCompatActivity
         if (channels != null) {
             for (String channelName: channels) {
                 drawerItemList.add(new DrawerEntry(channelName, 0,
+                        mSession.isConversationRead(channelName, Conversation.TYPE_CHANNEL),
                         mSession.isConversationSelected(channelName, Conversation.TYPE_CHANNEL)));
             }
         }
@@ -308,9 +310,10 @@ public class MainActivity extends AppCompatActivity
         // Populate private messages (by default no PM open)
         Collection<String> userConv = mSession.getConversationNamesByType(Conversation.TYPE_USER);
         if (userConv != null) {
-            for (String username: userConv) {
-                drawerItemList.add(new DrawerEntry(username, 0,
-                        mSession.isConversationSelected(username, Conversation.TYPE_USER)));
+            for (String nickname: userConv) {
+                drawerItemList.add(new DrawerEntry(nickname, 0,
+                        mSession.isConversationRead(nickname, Conversation.TYPE_USER),
+                        mSession.isConversationSelected(nickname, Conversation.TYPE_USER)));
             }
         }
         drawerItemList.add(new DrawerEntry(getString(R.string.navigation_sendPrivateMessage),
@@ -342,6 +345,18 @@ public class MainActivity extends AppCompatActivity
             Log.d(ID, "Clicked on item: " + itemName);
             openConversation(mSession.getConversation(itemName));
         }
+    }
+
+    /* Join a channel */
+    private void joinChannel(final String name) {
+        // TODO: Support password-protected channels
+        // TODO: Detect channel ban
+        new Thread() {
+            @Override
+            public void run() {
+                mBinder.getService().getClient(mSession).joinChannel(name);
+            }
+        }.start();
     }
 
     /* Dialog for choosing a username */
@@ -380,33 +395,29 @@ public class MainActivity extends AppCompatActivity
     }
 
     /* Validate channel with server and change view to channel */
-    public void pickChannel(final String name) {
+    public void pickChannel(String name) {
         mCurrentConversation = name;
-        // TODO: Support channels with keys
-        new Thread() {
-            @Override
-            public void run() {
-                mBinder.getService().getClient(mSession).joinChannel(name);
-            }
-        }.start();
+        joinChannel(name);
     }
 
     /* Opens a conversation */
     public void openConversation(Conversation conversation) {
         if (conversation != null) {
-            // Set current conversation
+            /* Set current conversation */
             mToolbar.setTitle(conversation.getName());
             // TODO: Set in db
             mSession.setCurrentConversation(conversation);
-            // Create and attach fragment
+            /* Create and attach fragment */
             Bundle args = new Bundle();
             args.putSerializable(CONVERSATION, conversation);
-            // Instantiate Conversation fragment
+            /* Instantiate Conversation fragment */
             ConversationFragment conversationFragment = new ConversationFragment();
             conversationFragment.setArguments(args);
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.content, conversationFragment, CONVERSATION_FRAGMENT);
             transaction.commit();
+            /* Mark conversation as read */
+            conversation.markAsRead();
         } else {
             Toast.makeText(getApplicationContext(), R.string.toast_notOpenConversation,
                     Toast.LENGTH_SHORT).show();
@@ -470,6 +481,11 @@ public class MainActivity extends AppCompatActivity
         Conversation conversation = mSession.getConversation(title);
         if (conversation != null) {
             conversation.addMessage(new Message(text, sender, new Date()));
+            /* If not the current conversation on the device, mark as unread */
+            if (mSession.getCurrentConversation() != conversation) {
+                conversation.markAsUnread();
+            }
+            populateDrawer();
         }
         refreshMessageList();
     }
