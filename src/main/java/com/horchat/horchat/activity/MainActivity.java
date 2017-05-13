@@ -274,6 +274,7 @@ public class MainActivity extends AppCompatActivity
         switch (requestCode) {
             case PICK_CHANNEL_REQUEST:
                 if (resultCode == RESULT_OK) {
+                    mDrawerLayout.closeDrawers();
                     String channel = data.getStringExtra(PickChannelActivity.PICK);
                     pickChannel(channel);
                 }
@@ -284,7 +285,6 @@ public class MainActivity extends AppCompatActivity
 
     /* Populate navigation drawer */
     private void populateDrawer() {
-        mDrawerLayout.closeDrawers();
         LayoutInflater inflater = getLayoutInflater();
         List<DrawerItem> drawerItemList = new ArrayList<DrawerItem>();
         // Conversation with server (for information messages)
@@ -335,14 +335,18 @@ public class MainActivity extends AppCompatActivity
                 startActivityForResult(activityIntent, PICK_CHANNEL_REQUEST);
             } else if (itemName.equals(
                     getResources().getString(R.string.navigation_sendPrivateMessage))) {
-                // Clicked on "Open new conversation"
+                /* Clicked on "Open new conversation" */
+                mDrawerLayout.closeDrawers();
                 pickUserDialog();
             } else {
-                // Server conversation clicked
+                /* Server conversation clicked */
+                mDrawerLayout.closeDrawers();
                 openConversation(mSession.getServerConversation());
             }
         } else {
             Log.d(ID, "Clicked on item: " + itemName);
+            /* Channel/private conversation clicked */
+            mDrawerLayout.closeDrawers();
             openConversation(mSession.getConversation(itemName));
         }
     }
@@ -396,8 +400,14 @@ public class MainActivity extends AppCompatActivity
 
     /* Validate channel with server and change view to channel */
     public void pickChannel(String name) {
-        mCurrentConversation = name;
-        joinChannel(name);
+        Conversation conversation = mSession.getConversation(name);
+        if (conversation != null) {
+            /* Channel was already joined */
+            openConversation(conversation);
+        } else{
+            mCurrentConversation = name;
+            joinChannel(name);
+        }
     }
 
     /* Opens a conversation */
