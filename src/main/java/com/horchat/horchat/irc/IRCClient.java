@@ -25,6 +25,7 @@ public class IRCClient extends PircBot {
     private final IRCService mService;
     private final Session mSession;
     private Map<String, Channel> mChannelList;
+    private boolean mRegistered;
 
     /* Class constructor */
     public IRCClient(IRCService service, Session session) {
@@ -34,6 +35,7 @@ public class IRCClient extends PircBot {
         mChannelList = new HashMap<String, Channel>();
         // If nick already exists, change to a different one automatically
         setAutoNickChange(true);
+        mRegistered = false;
     }
     public void setUsername(String username) {
         setLogin(username);
@@ -69,6 +71,22 @@ public class IRCClient extends PircBot {
             channels.add(mChannelList.get(key));
         }
         return channels;
+    }
+    public void onRegistered() {
+        mRegistered = true;
+        for (Conversation conversation: mService.getAutoJoinChannelList()) {
+            if (conversation.getType() == Conversation.TYPE_CHANNEL) {
+                joinChannel(conversation.getName());
+            }
+        }
+    }
+    @Override
+    protected void onServerResponse (int code, String response) {
+        if (code == 4) {
+            onRegistered();
+        }
+        // Parse message and send to client
+        // TODO
     }
     @Override
     protected void onChannelInfo(String channel, int userCount, String topic) {

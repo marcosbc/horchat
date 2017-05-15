@@ -10,47 +10,68 @@ import android.util.Log;
 
 import com.horchat.horchat.activity.MainActivity;
 import com.horchat.horchat.model.Account;
+import com.horchat.horchat.model.Conversation;
 import com.horchat.horchat.model.Server;
 import com.horchat.horchat.model.Session;
 import com.horchat.horchat.model.Settings;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String ID = "horchat";
     /* Database configuration */
-    private static final String DB_NAME         = "horchat";
-    private static final int DB_VERSION         = 1;
+    private static final String DB_NAME              = "horchat";
+    private static final int DB_VERSION              = 2;
     /* Table names */
-    private static final String TABLE_SESSIONS  = "sessions";
-    private static final String TABLE_SETTINGS  = "settings";
+    private static final String TABLE_SESSIONS       = "sessions";
+    private static final String TABLE_SETTINGS       = "settings";
+    private static final String TABLE_CONVERSATIONS  = "conversations";
     /* Strings for creating and dropping databases */
     private static final String SQL_CREATE_SESSIONS =
-            "CREATE TABLE IF NOT EXISTS " + TABLE_SESSIONS + " ("   +
-            "    username   TEXT    NOT NULL,"                      +
-            "    realName   TEXT    NOT NULL,"                      +
-            "    nickname   TEXT    NOT NULL,"                      +
-            "    host       TEXT    NOT NULL,"                      +
-            "    port       INTEGER NOT NULL,"                      +
-            "    password   TEXT,"                                  +
-            "    PRIMARY KEY (username, host)"                      +
+            "CREATE TABLE IF NOT EXISTS " + TABLE_SESSIONS + " ("      +
+            "    username   TEXT    NOT NULL,"                         +
+            "    realName   TEXT    NOT NULL,"                         +
+            "    nickname   TEXT    NOT NULL,"                         +
+            "    host       TEXT    NOT NULL,"                         +
+            "    port       INTEGER NOT NULL,"                         +
+            "    password   TEXT,"                                     +
+            "    PRIMARY KEY (username, host)"                         +
             ")";
     private static final String SQL_DROP_SESSIONS =
             "DROP TABLE IF EXISTS " + TABLE_SESSIONS;
     private static final String SQL_CREATE_SETTINGS =
-            "CREATE TABLE IF NOT EXISTS " + TABLE_SETTINGS + " ("   +
-            "    key        TEXT PRIMARY KEY,"                      +
-            "    value      TEXT"                                   +
+            "CREATE TABLE IF NOT EXISTS " + TABLE_SETTINGS + " ("      +
+            "    sid        INTEGER NOT NULL,"                         +
+            "    key        TEXT,"                                     +
+            "    value      TEXT,"                                     +
+            "    PRIMARY KEY (sid, key)"                               +
             ")";
     private static final String SQL_DROP_SETTINGS =
             "DROP TABLE IF EXISTS " + TABLE_SETTINGS;
+
+    private static final String SQL_CREATE_CONVERSATIONS =
+            "CREATE TABLE IF NOT EXISTS " + TABLE_CONVERSATIONS + " (" +
+            "    sid        INTEGER NOT NULL,"                         +
+            "    name       TEXT,"                                     +
+            "    data       TEXT,"                                     +
+            "    type       INTEGER NOT NULL,"                         +
+            "    PRIMARY KEY (sid, name, type)"                        +
+            ")";
+    private static final String SQL_DROP_CONVERSATIONS =
+            "DROP TABLE IF EXISTS " + TABLE_CONVERSATIONS;
     /* Table keys */
     public static final String ID_CURRENT_SESSION = "currentSessionId";
+    public static final String LAST_CONVERSATION_NAME = "lastConversationName";
     /* Class attributes */
-    private Settings settings;
+    private Settings mSettings;
+    private long mSessionId;
 
     /* Database helper */
     public DatabaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
-        settings = getSettings();
+        mSessionId = getCurrentSessionId();
+        mSettings = getSettings();
     }
 
     /* Database instantiation method */
@@ -58,6 +79,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_SESSIONS);
         db.execSQL(SQL_CREATE_SETTINGS);
+        db.execSQL(SQL_CREATE_CONVERSATIONS);
     }
 
     /* Database upgrade method */
@@ -66,22 +88,46 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         /* TODO: Implement proper upgrade method */
         db.execSQL(SQL_DROP_SESSIONS);
         db.execSQL(SQL_DROP_SETTINGS);
+        db.execSQL(SQL_DROP_CONVERSATIONS);
         onCreate(db);
     }
 
     /* Helper methods */
+    private long getCurrentSessionId() {
+        long sessionId = 0;
+        SQLiteDatabase db = getReadableDatabase();
+        String[] columns = { "value" };
+        String whereClause = "key = ?";
+        String[] whereArgs = { ID_CURRENT_SESSION };
+        Cursor cursor = db.query(TABLE_SETTINGS, columns, whereClause, whereArgs, null, null, null,
+                null);
+        if (cursor.moveToNext() && cursor.getColumnCount() >= 1) {
+            try {
+                sessionId = Integer.parseInt(cursor.getString(0));
+            } catch(Exception e) {
+                // Nothing to be done
+            }
+        }
+        cursor.close();
+        db.close();
+        return sessionId;
+    }
     private Settings getSettings() {
         SQLiteDatabase db = getReadableDatabase();
         String tuples[] = {"key", "value"};
-        Cursor cursor = db.query(TABLE_SETTINGS, tuples, null, null, null, null, null, null);
+        String whereClause = "sid = ?";
+        String[] whereArgs = { String.valueOf(mSessionId) };
+        Cursor cursor = db.query(TABLE_SETTINGS, tuples, whereClause, whereArgs, null, null, null,
+                null);
         Settings settings = new Settings(cursor);
         cursor.close();
+        db.close();
         return settings;
     }
     public String getSetting(String key) {
         String value = null;
-        if (settings != null) {
-            value = settings.getValue(key);
+        if (mSettings != null) {
+            value = mSettings.getValue(key);
         }
         return value;
     }
@@ -98,10 +144,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long returnCode = 0;
         if (db != null) {
             ContentValues row = new ContentValues();
+            long sessionId = mSessionId;
+            if (key.equals(ID_CURRENT_SESSION)) {
+                /* Force it to be unique for all sessions */
+                sessionId = 0;
+            }
+            row.put("sid", sessionId);
             row.put("key", key);
             row.put("value", value);
-            returnCode = db.insertWithOnConflict(TABLE_SETTINGS, null, row, SQLiteDatabase.CONFLICT_REPLACE);
-            settings.setValue(key, value);
+            returnCode = db.insertWithOnConflict(TABLE_SETTINGS, null, row,
+                    SQLiteDatabase.CONFLICT_REPLACE);
+            mSettings.setValue(key, value);
             db.close();
         }
         return returnCode;
@@ -109,17 +162,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void clearSetting(String key) {
         SQLiteDatabase db = getWritableDatabase();
         db.delete(TABLE_SETTINGS, "key = '" + key + "'", null);
-        settings.clearValue(key);
+        mSettings.clearValue(key);
         db.close();
     }
     public Session getCurrentSession() {
         Session session = null;
-        // Get the current active account
-        long currentSession = getIntegerSetting(ID_CURRENT_SESSION);
         // Check if the key is defined, if not, the user was not logged in
-        if (currentSession > 0) {
+        if (mSessionId > 0) {
             Log.d(ID, "Found current session");
-            session = getSession(currentSession);
+            session = getSession(mSessionId);
         } else {
             Log.d(ID, "Could not find any active session");
         }
@@ -191,5 +242,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.delete(TABLE_SETTINGS, "key = '" + ID_CURRENT_SESSION + "'", null);
             db.close();
         }
+    }
+
+    /* New conversation */
+    public void newConversation(Conversation conversation, long sessionId) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues row = new ContentValues();
+        row.put("sid", sessionId);
+        row.put("name", conversation.getName());
+        // TODO: Add data to conversation
+        row.put("data", (String) null);
+        row.put("type", conversation.getType());
+        db.insert(TABLE_CONVERSATIONS, null, row);
+    }
+
+    /* Get conversations */
+    public List<Conversation> getConversations(long sessionId) {
+        List<Conversation> conversations = new ArrayList<Conversation>();
+        String tuples[] = {"name", "data", "type"};
+        String whereClause = "sid = ?";
+        String whereArgs[] = { String.valueOf(sessionId) };
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(TABLE_CONVERSATIONS, tuples, whereClause, whereArgs, null, null,
+                null, null);
+        if (cursor != null) {
+            while (cursor.moveToNext() && cursor.getColumnCount() >= 3) {
+                conversations.add(new Conversation(cursor.getString(0), cursor.getInt(2)));
+            }
+        }
+        cursor.close();
+        return conversations;
     }
 }

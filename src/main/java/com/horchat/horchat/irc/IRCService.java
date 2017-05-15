@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.horchat.horchat.db.DatabaseHelper;
 import com.horchat.horchat.model.Account;
+import com.horchat.horchat.model.Conversation;
 import com.horchat.horchat.model.Server;
 import com.horchat.horchat.model.Session;
 
@@ -27,6 +28,7 @@ public class IRCService extends Service {
     private Server mServer = null;
     private Map<Long, IRCClient> mConnections;
     private List<Session> mSessionList;
+    private List<Conversation> mAutoJoinChannels;
 
     public IRCService() {
         mBinder = new IRCBinder(this);
@@ -65,6 +67,12 @@ public class IRCService extends Service {
             mConnections.put(sessionId, client);
         }
         return client;
+    }
+    public void setAutoJoinChannelList(List<Conversation> conversations) {
+        mAutoJoinChannels = conversations;
+    }
+    public List<Conversation> getAutoJoinChannelList() {
+        return mAutoJoinChannels;
     }
     public void connect(final Session session) {
         Log.d("horchat", "Service connect called");

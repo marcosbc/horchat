@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.provider.ContactsContract;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -73,6 +74,7 @@ public class MainActivity extends AppCompatActivity
     private SessionReceiver mSessionReceiver;
     private ConversationReceiver mConversationReceiver;
     private String mCurrentConversation;
+    private boolean mChannelsJoined;
 
     private IRCBinder mBinder;
 
@@ -143,7 +145,7 @@ public class MainActivity extends AppCompatActivity
         TextView username = (TextView) drawerHeader.findViewById(R.id.navigation_username);
         username.setText(getString(R.string.navigation_username,
                 mSession.getAccount().getNickname(), mSession.getAccount().getUsername()));
-        mCurrentConversation = null;
+        mChannelsJoined = false;
     }
 
     @Override
@@ -192,11 +194,24 @@ public class MainActivity extends AppCompatActivity
         Server server = mSession.getServer();
         Log.d(ID, "onServiceConnected: Status is: " + server.getStatus());
         /* Check if this is the first connect attempt to IRC server */
+        List<Conversation> fullConversationList = mDb.getConversations(mSession.getId());
         if (server.getStatus() == Server.STATUS_PRECONNECTING) {
             server.setStatus(Server.STATUS_CONNECTING);
+            service.setAutoJoinChannelList(fullConversationList);
             service.connect(mSession);
         } else {
             onStatusUpdate();
+        }
+        // Populate conversations
+        for (Conversation conversation: fullConversationList) {
+            if (conversation.getType() != Conversation.TYPE_SERVER) {
+                mSession.newConversation(conversation);
+            }
+        }
+        // Set the current conversation
+        String currentConversationName = mDb.getSetting(DatabaseHelper.LAST_CONVERSATION_NAME);
+        if (currentConversationName != null) {
+            mSession.setCurrentConversation(mSession.getConversation(currentConversationName));
         }
         // Open current conversation
         Conversation currentConversation = mSession.getCurrentConversation();
@@ -355,6 +370,7 @@ public class MainActivity extends AppCompatActivity
     private void joinChannel(final String name) {
         // TODO: Support password-protected channels
         // TODO: Detect channel ban
+        Log.d(ID, "Joining channel " + name);
         new Thread() {
             @Override
             public void run() {
@@ -393,9 +409,9 @@ public class MainActivity extends AppCompatActivity
     public void pickUser(String name) {
         Toast.makeText(getApplicationContext(), "Selected user " + name, Toast.LENGTH_SHORT).show();
         // TODO: Check if user exists
-        mSession.newConversation(name, Conversation.TYPE_USER);
+        Conversation conversation = createConversation(name, Conversation.TYPE_USER);
         // Open the new conversation
-        openConversation(mSession.getConversation(name));
+        openConversation(conversation);
     }
 
     /* Validate channel with server and change view to channel */
@@ -428,6 +444,8 @@ public class MainActivity extends AppCompatActivity
             transaction.commit();
             /* Mark conversation as read */
             conversation.markAsRead();
+            /* Set as current conversation in the database */
+            mDb.setSetting(DatabaseHelper.LAST_CONVERSATION_NAME, conversation.getName());
         } else {
             Toast.makeText(getApplicationContext(), R.string.toast_notOpenConversation,
                     Toast.LENGTH_SHORT).show();
@@ -483,6 +501,17 @@ public class MainActivity extends AppCompatActivity
         fragment.refreshMessageList();
     }
 
+    public Conversation createConversation(String title, int type) {
+        /* Create conversation if it doesn't exist */
+        Conversation conversation = mSession.getConversation(title);
+        if (conversation == null) {
+            /* The conversation did not exist before, create and add to the database */
+            conversation = mSession.newConversation(title, type);
+            mDb.newConversation(conversation, mSession.getId());
+        }
+        return conversation;
+    }
+
     public void onConversationMessage(Bundle args) {
         Log.d(ID, "Conversation message");
         String title = args.getString(Conversation.TITLE);
@@ -508,7 +537,7 @@ public class MainActivity extends AppCompatActivity
         String sender = args.getString(Conversation.SENDER);
         String text = args.getString(Conversation.MESSAGE);
         /* Create the new conversation */
-        Conversation conversation = mSession.newConversation(title, type);
+        Conversation conversation = createConversation(title, type);
         populateDrawer();
         if (text != null) {
             /* If we received a message with the action */
@@ -516,8 +545,6 @@ public class MainActivity extends AppCompatActivity
         }
         /* Check if we were opening the conversation on our side */
         Account account = mSession.getAccount();
-        Log.d(ID, "check 1 (" + account.getNickname() + " vs " + sender + "): " + account.getNickname().equals(sender));
-        Log.d(ID, "check 2 (" + title + " vs " + mCurrentConversation + "): " + title.equals(mCurrentConversation));
         if (account.getNickname().equals(sender) && title.equals(mCurrentConversation)) {
             openConversation(conversation);
         }

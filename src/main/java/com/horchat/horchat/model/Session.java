@@ -76,6 +76,10 @@ public class Session implements Serializable {
         mConversations.add(conversation);
         return conversation;
     }
+    public Conversation newConversation(Conversation conversation) {
+        mConversations.add(conversation);
+        return conversation;
+    }
     public boolean hasConversation(String name) {
         if (getConversation(name) != null) {
             return true;
@@ -107,7 +111,9 @@ public class Session implements Serializable {
         return conversationNames;
     }
     public void setCurrentConversation(Conversation conversation) {
-        mCurrentConversation = conversation;
+        if (conversation != null) {
+            mCurrentConversation = conversation;
+        }
     }
     public Conversation getCurrentConversation() {
         return mCurrentConversation;
