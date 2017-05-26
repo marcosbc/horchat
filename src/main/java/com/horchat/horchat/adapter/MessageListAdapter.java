@@ -45,14 +45,21 @@ public class MessageListAdapter extends ArrayAdapter<Message> {
         }
         // Update views
         Message message = mMessages.get(pos);
-        viewHolder.sender.setText(message.getSender());
+        if (message.getSender() != null) {
+            viewHolder.sender.setText(message.getSender());
+        }
         viewHolder.date.setText(message.getFormattedDate());
         viewHolder.text.setText(message.getText());
         return view;
     }
     private View getInflatedLayoutForType(int type) {
         LayoutInflater inflater = LayoutInflater.from(mContext);
-        int layoutResource = R.layout.conversation_message;
+        int layoutResource;
+        if (type == Message.TYPE_SERVER) {
+            layoutResource = R.layout.conversation_status;
+        } else {
+            layoutResource = R.layout.conversation_message;
+        }
         return LayoutInflater.from(mContext).inflate(layoutResource, null);
     }
     // View Holder class (check: View Holder pattern)

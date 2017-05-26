@@ -1,5 +1,8 @@
 package com.horchat.horchat.listener;
 
+import android.os.Bundle;
+
 public interface SessionListener {
-    void onStatusUpdate();
+    void onStatusCheck();
+    void onStatusMessage(Bundle args);
 }

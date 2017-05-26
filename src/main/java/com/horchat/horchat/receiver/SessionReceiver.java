@@ -3,6 +3,7 @@ package com.horchat.horchat.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 
 import com.horchat.horchat.listener.SessionListener;
 
@@ -14,6 +15,10 @@ public class SessionReceiver extends BroadcastReceiver {
     }
 
     public void onReceive(Context context, Intent intent) {
-        mListener.onStatusUpdate();
+        mListener.onStatusCheck();
+        Bundle args = intent.getExtras();
+        if (args != null) {
+            mListener.onStatusMessage(args);
+        }
     }
 }

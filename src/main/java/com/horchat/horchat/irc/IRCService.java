@@ -100,6 +100,12 @@ public class IRCService extends Service {
                     if (!server.getPassword().isEmpty()) {
                         serverPassword = server.getPassword();
                     }
+                    // Send a server update
+                    Intent serverIntent = IRCBroadcastHandler
+                            .createServerIntent(IRCBroadcastHandler.SERVER_UPDATE);
+                    serverIntent.putExtra(Server.MESSAGE_TYPE, Server.MESSAGE_CONNECTING);
+                    service.sendBroadcast(serverIntent);
+                    // Connect to the server
                     client.connect(server.getHost(), server.getPort(), serverPassword);
                     /* We will store the list of channels later */
                     client.listChannels();

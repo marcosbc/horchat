@@ -1,6 +1,7 @@
 package com.horchat.horchat.irc;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.horchat.horchat.model.Account;
@@ -52,17 +53,18 @@ public class IRCClient extends PircBot {
         server.setStatus(Server.STATUS_CONNECTED);
         server.setAllowReconnection(true);
         // Send a server update
-        mService.sendBroadcast(
-                IRCBroadcastHandler.createServerIntent(IRCBroadcastHandler.SERVER_UPDATE)
-        );
-        // Create broadcast message for successful login
-        /*
-        Intent createConversationIntent = IRCBroadcastHandler.createConversationIntent(
-                IRCBroadcastHandler.CONVERSATION_MESSAGE,
-                ServerInfo.ALL_CONVERSATIONS
-        );
-        mService.sendBroadcast(createConversationIntent);
-        */
+        Intent serverIntent = IRCBroadcastHandler
+                .createServerIntent(IRCBroadcastHandler.SERVER_UPDATE);
+        serverIntent.putExtra(Server.MESSAGE_TYPE, Server.MESSAGE_CONNECTED);
+        mService.sendBroadcast(serverIntent);
+    }
+    @Override
+    protected void onDisconnect () {
+        // Send a server update
+        Intent serverIntent = IRCBroadcastHandler
+                .createServerIntent(IRCBroadcastHandler.SERVER_UPDATE);
+        serverIntent.putExtra(Server.MESSAGE_TYPE, Server.MESSAGE_DISCONNECTED);
+        mService.sendBroadcast(serverIntent);
     }
     public List<Channel> getChannelList() {
         List<Channel> channels = new ArrayList<Channel>();
@@ -103,14 +105,23 @@ public class IRCClient extends PircBot {
     @Override
     protected void onJoin(String channel, String sender, String login, String hostname) {
         Log.d(ID, "User joined " + channel + ": " + login + " " + sender + " " + hostname);
+        Bundle extra = new Bundle();
+        extra.putInt(Conversation.TYPE, Conversation.TYPE_CHANNEL);
+        extra.putString(Conversation.TITLE, channel);
+        extra.putString(Conversation.SENDER, sender);
+        extra.putString(Conversation.LOGIN, login);
+        extra.putString(Conversation.HOSTNAME, hostname);
+        // Send user-oriented broadcast
         Intent intent = IRCBroadcastHandler.createConversationIntent(
                 IRCBroadcastHandler.CONVERSATION_NEW);
-        intent.putExtra(Conversation.TYPE, Conversation.TYPE_CHANNEL);
-        intent.putExtra(Conversation.TITLE, channel);
-        intent.putExtra(Conversation.SENDER, sender);
-        intent.putExtra(Conversation.LOGIN, login);
-        intent.putExtra(Conversation.HOSTNAME, hostname);
+        intent.putExtras(extra);
         mService.sendBroadcast(intent);
+        // Send a server update
+        Intent serverIntent = IRCBroadcastHandler
+                .createServerIntent(IRCBroadcastHandler.SERVER_UPDATE);
+        serverIntent.putExtra(Server.MESSAGE_TYPE, Server.MESSAGE_JOIN);
+        serverIntent.putExtras(extra);
+        mService.sendBroadcast(serverIntent);
     }
     @Override
     protected void onMessage(String channel, String sender, String login, String hostname,
@@ -150,27 +161,74 @@ public class IRCClient extends PircBot {
     protected void onKick(String channel, String kickerNick, String kickerLogin,
                           String kickerHostname, String recipientNick, String reason) {
         Log.d(ID, "Received kick of " + recipientNick + " from " + channel);
+        Bundle extra = new Bundle();
+        extra.putString(Conversation.CHANNEL, channel);
+        extra.putString(Conversation.KICKERNICK, kickerNick);
+        extra.putString(Conversation.KICKERLOGIN, kickerLogin);
+        extra.putString(Conversation.KICKERHOST, kickerHostname);
+        extra.putString(Conversation.RECIPIENT, recipientNick);
+        extra.putString(Conversation.REASON, reason);
+        // Create user-oriented intent
         Intent intent = IRCBroadcastHandler.createConversationIntent(
                 IRCBroadcastHandler.CONVERSATION_REMOVE);
-        intent.putExtra(Conversation.CHANNEL, channel);
-        intent.putExtra(Conversation.KICKERNICK, kickerNick);
-        intent.putExtra(Conversation.KICKERLOGIN, kickerLogin);
-        intent.putExtra(Conversation.KICKERHOST, kickerHostname);
-        intent.putExtra(Conversation.RECIPIENT, recipientNick);
-        intent.putExtra(Conversation.REASON, reason);
+        intent.putExtras(extra);
         mService.sendBroadcast(intent);
+        // Send a server update
+        Intent serverIntent = IRCBroadcastHandler
+                .createServerIntent(IRCBroadcastHandler.SERVER_UPDATE);
+        serverIntent.putExtra(Server.MESSAGE_TYPE, Server.MESSAGE_KICK);
+        serverIntent.putExtras(extra);
+        mService.sendBroadcast(serverIntent);
     }
     @Override
     protected void onTopic(String target, String topic, String setBy, long date, boolean changed) {
         Log.d(ID, "Received topic change: " + topic);
+        Bundle extra = new Bundle();
+        extra.putString(Conversation.TARGET, target);
+        extra.putString(Conversation.TOPIC, topic);
+        extra.putString(Conversation.SETBY, setBy);
+        extra.putLong(Conversation.DATE, date);
+        extra.putBoolean(Conversation.CHANGED, changed);
+        // Create user-oriented intent
         Intent intent = IRCBroadcastHandler.createConversationIntent(
                 IRCBroadcastHandler.CONVERSATION_TOPIC);
-        intent.putExtra(Conversation.TARGET, target);
-        intent.putExtra(Conversation.TOPIC, topic);
-        intent.putExtra(Conversation.SETBY, setBy);
-        intent.putExtra(Conversation.DATE, date);
-        intent.putExtra(Conversation.CHANGED, changed);
+        intent.putExtras(extra);
         mService.sendBroadcast(intent);
+        // Send a server update
+        Intent serverIntent = IRCBroadcastHandler
+                .createServerIntent(IRCBroadcastHandler.SERVER_UPDATE);
+        serverIntent.putExtra(Server.MESSAGE_TYPE, Server.MESSAGE_TOPIC);
+        serverIntent.putExtras(extra);
+        mService.sendBroadcast(serverIntent);
+    }
+    @Override
+    protected void onPart(String channel, String sender, String login, String hostname) {
+        Bundle extra = new Bundle();
+        extra.putString(Conversation.TITLE, channel);
+        extra.putString(Conversation.SENDER, sender);
+        extra.putString(Conversation.LOGIN, login);
+        extra.putString(Conversation.HOSTNAME, hostname);
+        // Send a server update
+        Intent serverIntent = IRCBroadcastHandler
+                .createServerIntent(IRCBroadcastHandler.SERVER_UPDATE);
+        serverIntent.putExtra(Server.MESSAGE_TYPE, Server.MESSAGE_LEAVE);
+        serverIntent.putExtras(extra);
+        mService.sendBroadcast(serverIntent);
+    }
+    @Override
+    protected void onQuit(String sourceNick, String sourceLogin, String sourceHostname,
+                          String reason) {
+        Bundle extra = new Bundle();
+        extra.putString(Conversation.SENDER, sourceNick);
+        extra.putString(Conversation.LOGIN, sourceLogin);
+        extra.putString(Conversation.HOSTNAME, sourceHostname);
+        extra.putString(Conversation.REASON, reason);
+        // Send a server update
+        Intent serverIntent = IRCBroadcastHandler
+                .createServerIntent(IRCBroadcastHandler.SERVER_UPDATE);
+        serverIntent.putExtra(Server.MESSAGE_TYPE, Server.MESSAGE_QUIT);
+        serverIntent.putExtras(extra);
+        mService.sendBroadcast(serverIntent);
     }
     @Override
     protected void onFinger(String sourceNick, String sourceLogin, String sourceHostname,
@@ -190,5 +248,10 @@ public class IRCClient extends PircBot {
     @Override
     protected void onUserList(String channel, User[] users) {
         Log.d(ID, "Received user list: " + users);
+    }
+    @Override
+    protected void onInvite(String targetNick, String sourceNick, String sourceLogin,
+                            String sourceHostname, String channel) {
+        // TODO
     }
 }

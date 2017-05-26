@@ -18,6 +18,15 @@ public class Server implements Serializable {
     public static final int E_PORTNOTINT = 12;
     public static final int E_PORTRANGE = 13;
 
+    public static final String MESSAGE_TYPE = "Server__MESSAGE_TYPE";
+    public static final int MESSAGE_CONNECTING = 11;
+    public static final int MESSAGE_CONNECTED = 12;
+    public static final int MESSAGE_DISCONNECTED = 13;
+    public static final int MESSAGE_JOIN = 14;
+    public static final int MESSAGE_LEAVE = 15;
+    public static final int MESSAGE_KICK = 16;
+    public static final int MESSAGE_TOPIC = 17;
+    public static final int MESSAGE_QUIT = 18;
 
     private String mHost;
     private int mPort;

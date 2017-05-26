@@ -9,7 +9,7 @@ import java.util.Date;
 public class Message implements Serializable {
     public static final int NUM_TYPES = 2;
     public static final int TYPE_DEFAULT = 0;
-    public static final int TYPE_WARNERR = 1;
+    public static final int TYPE_SERVER = 1;
 
     private String mText;
     private String mSender;

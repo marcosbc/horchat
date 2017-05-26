@@ -6,11 +6,15 @@
     <string name="placeholder_item">_ITEM_</string>
     <string name="placeholder_text">_TEXT_</string>
     <string name="placeholder_date">_DATE_</string>
+    <string name="placeholder_closeConversation">_CLOSE_</string>
     <!-- Toolbar -->
     <string name="toolbar_search">Search</string>
     <string name="toolbar_options">Menu</string>
     <string name="toolbar_settings">Settings</string>
     <string name="toolbar_logout">Log out</string>
+    <!-- Menu -->
+    <string name="menu_leaveChannel">Leave channel</string>
+    <string name="menu_closePrivateConversation">Close conversation</string>
     <!-- Connect to server activity -->
     <string name="connectToServer_title">Connect to a server</string>
     <string name="connectToServer_next">Next</string>
@@ -60,4 +64,12 @@
     <string name="conversation_message">Message</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- Server message types -->
+    <string name="status_connecting">Connecting to %1$s...</string>
+    <string name="status_connected">Connected to %1$s.</string>
+    <string name="status_disconnected">Disconnected from %2$s.</string>
+    <string name="status_join">%1$s joined %2$s.</string>
+    <string name="status_leave">%1$s left %2$s.</string>
+    <string name="status_kick">%1$s was kicked from %2$s.</string>
+    <string name="status_quit">%1$s disconnected from %2$s.</string>
 </resources>

@@ -22,6 +22,11 @@
 
         <menu>
             <item
+                android:id="@+id/action_closeConversation"
+                android:title="@string/placeholder_closeConversation"
+                android:visible="false"
+                app:showAsAction="never"/>
+            <item
                 android:id="@+id/action_settings"
                 android:title="@string/toolbar_settings"
                 app:showAsAction="never"/>

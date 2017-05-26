@@ -273,4 +273,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return conversations;
     }
+
+    /* Close conversation */
+    public void closeConversation(String name, long sessionId) {
+        SQLiteDatabase db = getWritableDatabase();
+        String whereClause = "sid = ? AND name = ?";
+        String whereArgs[] = { String.valueOf(sessionId), name };
+        db.delete(TABLE_CONVERSATIONS, whereClause, whereArgs);
+    }
 }

@@ -200,7 +200,7 @@ public class MainActivity extends AppCompatActivity
             service.setAutoJoinChannelList(fullConversationList);
             service.connect(mSession);
         } else {
-            onStatusUpdate();
+            onStatusCheck();
         }
         // Populate conversations
         for (Conversation conversation: fullConversationList) {
@@ -248,6 +248,32 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    /* Called each time the menu opens */
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        invalidateOptionsMenu();
+        Conversation currentConversation = mSession.getCurrentConversation();
+        /* Make "Close Conversation" button non-visible by default */
+        MenuItem item = menu.findItem(R.id.action_closeConversation);
+        item.setVisible(false);
+        if (currentConversation != null) {
+            int titleRes = 0;
+            /* Add "Close Channel" if a Channel is the current conversation */
+            if (currentConversation.getType() == Conversation.TYPE_CHANNEL) {
+                titleRes = R.string.menu_leaveChannel;
+            }
+            /* Add "Close Conversation" if a Private Conversation is the current conversation */
+            else if (currentConversation.getType() == Conversation.TYPE_USER) {
+                titleRes = R.string.menu_closePrivateConversation;
+            }
+            if (titleRes != 0) {
+                item.setTitle(titleRes);
+                item.setVisible(true);
+            }
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
     /* Toolbar clicks */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -262,6 +288,14 @@ public class MainActivity extends AppCompatActivity
             case R.id.action_options:
                 /* Dropdown button will be handled via Views */
                 Log.d(ID, "Toolbar: Opening options menu");
+                break;
+            case R.id.action_closeConversation:
+                /* Close current conversation */
+                Log.d(ID, "Toolbar: Leaving channel");
+                Conversation currentConversation = mSession.getCurrentConversation();
+                if (currentConversation != null) {
+                    closeConversation(currentConversation.getName());
+                }
                 break;
             case R.id.action_settings:
                 /* Open a new activity for settings */
@@ -377,6 +411,23 @@ public class MainActivity extends AppCompatActivity
                 mBinder.getService().getClient(mSession).joinChannel(name);
             }
         }.start();
+    }
+
+    /* Leave a channel */
+    private void closeConversation(final String name) {
+        Log.d(ID, "Leaving channel " + name);
+        new Thread() {
+            @Override
+            public void run() {
+                mBinder.getService().getClient(mSession).partChannel(name);
+            }
+        }.start();
+        /* Open the server conversation */
+        openConversation(mSession.getServerConversation());
+        /* Remove the conversation from the list */
+        mSession.closeConversation(name);
+        mDb.closeConversation(name, mSession.getId());
+        populateDrawer();
     }
 
     /* Dialog for choosing a username */
@@ -498,7 +549,9 @@ public class MainActivity extends AppCompatActivity
     private void refreshMessageList() {
         ConversationFragment fragment =
                 (ConversationFragment) getSupportFragmentManager().findFragmentById(R.id.content);
-        fragment.refreshMessageList();
+        if (fragment != null) {
+            fragment.refreshMessageList();
+        }
     }
 
     public Conversation createConversation(String title, int type) {
@@ -575,14 +628,74 @@ public class MainActivity extends AppCompatActivity
         /* TODO */
     }
 
-    public void onStatusUpdate() {
+    public void onStatusCheck() {
         Server server = mSession.getServer();
         if (server.isConnected()) {
             // Connection is OK
             Log.d(ID, "Server is OK");
         } else {
-            // Connection was lost - Reconnect
+            // Connection was lost
+            // TODO: Add logic for enabling reconnection
             Log.d(ID, "Server is DOWN");
+        }
+    }
+
+    public void onStatusMessage(Bundle args) {
+        /* Parse any server message */
+        int type = args.getInt(Server.MESSAGE_TYPE);
+        String msg = null;
+        String user = null;
+        String channel = null;
+        switch (type) {
+            case Server.MESSAGE_CONNECTING:
+                msg = getString(R.string.status_connecting,
+                        mSession.getServerConversation().getName());
+                break;
+            case Server.MESSAGE_CONNECTED:
+                msg = getString(R.string.status_connected,
+                        mSession.getServerConversation().getName());
+                break;
+            case Server.MESSAGE_DISCONNECTED:
+                msg = getString(R.string.status_quit);
+                break;
+            case Server.MESSAGE_JOIN:
+                user = args.getString(Conversation.SENDER);
+                channel = args.getString(Conversation.TITLE);
+                msg = getString(R.string.status_join, user, channel);
+                break;
+            case Server.MESSAGE_LEAVE:
+                user = args.getString(Conversation.SENDER);
+                channel = args.getString(Conversation.TITLE);
+                msg = getString(R.string.status_leave, user, channel);
+                break;
+            case Server.MESSAGE_KICK:
+                user = args.getString(Conversation.KICKERNICK);
+                channel = args.getString(Conversation.CHANNEL);
+                msg = getString(R.string.status_kick, user, channel);
+                break;
+            case Server.MESSAGE_QUIT:
+                user = args.getString(Conversation.SENDER);
+                msg = getString(R.string.status_quit, user,
+                        mSession.getServerConversation().getName());
+                break;
+            /* Methods not in use */
+            case Server.MESSAGE_TOPIC:
+            default:
+                /* Don't do anything more in this method */
+                return;
+        }
+        if (msg != null) {
+            Conversation conversation = null;
+            // Message to be added to a channel
+            if (channel != null) {
+                conversation = mSession.getConversation(channel);
+            }
+            // Message to be added to the server conversation
+            if (conversation == null) {
+                conversation = mSession.getServerConversation();
+            }
+            conversation.addMessage(new Message(msg, null, new Date(), Message.TYPE_SERVER));
+            refreshMessageList();
         }
     }
 }
