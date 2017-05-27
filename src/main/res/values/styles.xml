@@ -3,6 +3,7 @@
     <style name="Horchat" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="preferenceTheme">@style/Horchat.PreferenceOverlay</item>
     </style>
 
     <style name="Horchat.ActionBar" parent="Theme.AppCompat.Light"></style>
@@ -13,8 +14,27 @@
         <item name="android:textSize">24sp</item>
     </style>
 
-    <style name="Horchat.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="Horchat.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
-    <style name="Horchat.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="Horchat.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
+    <style name="Horchat.PreferenceOverlay">
+        <item name="android:divider">?android:dividerHorizontal</item>
+        <item name="android:dividerHeight">1dp</item>
+        <item name="preferenceScreenStyle">@style/Preference.PreferenceScreen</item>
+        <item name="preferenceFragmentStyle">@style/PreferenceFragment</item>
+        <item name="preferenceCategoryStyle">@style/Preference.Category</item>
+        <item name="preferenceStyle">@style/Preference</item>
+        <item name="preferenceInformationStyle">@style/Preference.Information</item>
+        <item name="checkBoxPreferenceStyle">@style/Preference.CheckBoxPreference</item>
+        <item name="switchPreferenceCompatStyle">@style/Preference.SwitchPreferenceCompat</item>
+        <item name="dialogPreferenceStyle">@style/Preference.DialogPreference</item>
+        <item name="editTextPreferenceStyle">@style/Preference.DialogPreference.EditTextPreference</item>
+        <item name="preferenceFragmentListStyle">@style/Horchat.PreferenceOverlay.ListStyle</item>
+    </style>
+
+    <style name="Horchat.PreferenceOverlay.ListStyle">
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+    </style>
 </resources>

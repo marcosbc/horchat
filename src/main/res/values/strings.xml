@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">Horchat</string>
+    <string name="app_url">https://github.com/marcosbc/horchat</string>
+    <string name="app_license_url">https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html</string>
+    <string name="app_license">GNU GPLv2</string>
     <!-- Placeholders (to be replaced) -->
     <string name="placeholder_title">Horchat</string>
     <string name="placeholder_username">_USERNAME_</string>
@@ -7,6 +10,7 @@
     <string name="placeholder_text">_TEXT_</string>
     <string name="placeholder_date">_DATE_</string>
     <string name="placeholder_closeConversation">_CLOSE_</string>
+    <string name="placeholder_version">_VERSION_</string>
     <!-- Toolbar -->
     <string name="toolbar_search">Search</string>
     <string name="toolbar_options">Menu</string>
@@ -40,8 +44,13 @@
     <string name="toast_newChannel">Channel name is invalid</string>
     <string name="toast_notOpenConversation">Could not open conversation</string>
     <!-- Settings/preferences -->
+    <string name="preference_title">Settings</string>
     <string name="preference_about">About Horchat</string>
     <string name="preference_nickname">Nickname</string>
+    <string name="preference_name">Name</string>
+    <string name="preference_version">Version</string>
+    <string name="preference_url">Source code URL</string>
+    <string name="preference_license">License</string>
     <!-- Navigation -->
     <string name="navigation_username">%1$s (%2$s)</string>
     <string name="navigation_joinChannel">Join a channel</string>

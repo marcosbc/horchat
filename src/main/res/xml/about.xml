@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.preference.PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <android.support.v7.preference.Preference
+        android:key="name"
+        android:title="@string/preference_name"
+        android:summary="@string/app_name"
+        android:layout="@layout/custom_preference"/>
+    <android.support.v7.preference.Preference
+        android:key="version"
+        android:title="@string/preference_version"
+        android:summary="@string/placeholder_version"
+        android:layout="@layout/custom_preference"/>
+    <android.support.v7.preference.Preference
+        android:key="url"
+        android:title="@string/preference_url"
+        android:summary="@string/app_url"
+        android:layout="@layout/custom_preference"/>
+    <android.support.v7.preference.Preference
+        android:key="license"
+        android:title="@string/preference_license"
+        android:summary="@string/app_license"
+        android:layout="@layout/custom_preference"/>
+</android.support.v7.preference.PreferenceScreen>

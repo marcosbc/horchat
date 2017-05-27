@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<android.support.v7.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- TODO: Support nickname change -->
+    <!--
     <EditTextPreference
         android:key="nickname"
         android:title="@string/preference_nickname"
         android:summary="mynickname"/>
-    <PreferenceScreen
+    -->
+    <android.support.v7.preference.PreferenceScreen
         android:title="@string/preference_about"
-        android:key="about">
+        android:key="about"
+        android:layout="@layout/custom_preference">
         <intent
             android:targetPackage="com.horchat.horchat"
             android:targetClass="com.horchat.horchat.activity.SettingsActivity"
             android:action="com.horchat.horchat.PREFS_ABOUT"/>
-    </PreferenceScreen>
-</PreferenceScreen>
+    </android.support.v7.preference.PreferenceScreen>
+</android.support.v7.preference.PreferenceScreen>
