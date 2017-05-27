@@ -30,7 +30,6 @@ public class IRCClient extends PircBot {
 
     /* Class constructor */
     public IRCClient(IRCService service, Session session) {
-        Log.d(ID, "IRCClient::IRCClient called");
         mService = service;
         mSession = session;
         mChannelList = new HashMap<String, Channel>();
@@ -48,7 +47,6 @@ public class IRCClient extends PircBot {
         setName(nickname);
     }
     public void onConnect() {
-        Log.d(ID, "IRCClient::onConnect called");
         Server server = mSession.getServer();
         server.setAllowReconnection(true);
         // Send a server update
@@ -100,6 +98,13 @@ public class IRCClient extends PircBot {
         } else {
             mChannelList.put(channel, newChannel);
         }
+        // Send a server update
+        Bundle extra = new Bundle();
+        Intent serverIntent = IRCBroadcastHandler
+                .createServerIntent(IRCBroadcastHandler.SERVER_UPDATE);
+        serverIntent.putExtra(Server.MESSAGE_TYPE, Server.MESSAGE_CHANNELS);
+        serverIntent.putExtras(extra);
+        mService.sendBroadcast(serverIntent);
     }
     @Override
     protected void onJoin(String channel, String sender, String login, String hostname) {

@@ -27,6 +27,7 @@ public class Server implements Serializable {
     public static final int MESSAGE_KICK = 16;
     public static final int MESSAGE_TOPIC = 17;
     public static final int MESSAGE_QUIT = 18;
+    public static final int MESSAGE_CHANNELS = 19;
 
     private String mHost;
     private int mPort;

@@ -4,20 +4,20 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="20dp">
+    android:padding="18dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+android:id/title"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:textColor="?android:attr/textColorPrimary"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+android:id/summary"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:textColor="?android:attr/textColorSecondary"/>
 
 </LinearLayout>

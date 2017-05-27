@@ -3,6 +3,7 @@ package com.horchat.horchat.activity;
 import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -20,15 +21,20 @@ import android.widget.Toast;
 import com.horchat.horchat.R;
 import com.horchat.horchat.adapter.TargetListAdapter;
 import com.horchat.horchat.irc.IRCBinder;
+import com.horchat.horchat.irc.IRCBroadcastHandler;
 import com.horchat.horchat.irc.IRCService;
+import com.horchat.horchat.listener.SessionListener;
 import com.horchat.horchat.model.Channel;
+import com.horchat.horchat.model.Server;
 import com.horchat.horchat.model.Session;
 import com.horchat.horchat.model.TargetItem;
+import com.horchat.horchat.receiver.SessionReceiver;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PickChannelActivity extends AppCompatActivity implements ServiceConnection {
+public class PickChannelActivity extends AppCompatActivity implements ServiceConnection,
+        SessionListener {
     public static final String ID = "Horchat";
     public static final String TYPE = "PickTargetActivity__Type";
     public static final String PICK = "PickTargetActivity__Pick";
@@ -40,6 +46,8 @@ public class PickChannelActivity extends AppCompatActivity implements ServiceCon
     private ListView mTargetList;
     private Session mSession;
     private IRCBinder mBinder;
+    private List<TargetItem> mChannels;
+    private SessionReceiver mSessionReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,10 +77,14 @@ public class PickChannelActivity extends AppCompatActivity implements ServiceCon
             // The session is invalid - Quit
             finish();
         }
+        mChannels = new ArrayList<TargetItem>();
     }
     @Override
     public void onResume() {
         super.onResume();
+        // Register receivers
+        mSessionReceiver = new SessionReceiver(this);
+        registerReceiver(mSessionReceiver, new IntentFilter(IRCBroadcastHandler.SERVER_UPDATE));
         // Bind to the IRC service
         Intent ircServiceIntent = new Intent(this, IRCService.class);
         ircServiceIntent.setAction(IRCService.ACTION_BACKGROUND);
@@ -83,27 +95,36 @@ public class PickChannelActivity extends AppCompatActivity implements ServiceCon
     @Override
     public void onPause() {
         super.onPause();
-        // Unbind the IRC service
+        // Unbind the IRC service and unregister broadcast receivers
         unbindService(this);
+        unregisterReceiver(mSessionReceiver);
     }
 
     public void onServiceConnected(ComponentName name, IBinder binder) {
         mBinder = (IRCBinder) binder;
-        Log.d(ID, "Service is null? " + (mBinder.getService() == null));
         // Populate target list
-        populateTargetList(getChannelNames());
+        getChannelsFromService();
+        populateTargetList();
     }
 
     public void onServiceDisconnected(ComponentName name) {
         mBinder = null;
-        Log.d(ID, "Service disconnect");
     }
 
     /* Populates the target list */
-    private void populateTargetList(List<TargetItem> targetList) {
-        if (targetList != null) {
-            mTargetList.setAdapter(new TargetListAdapter(this, targetList));
+    private void populateTargetList() {
+        // First of all, add channels and actions to channel list
+        if (mChannels.size() != 0) {
+            mChannels.clear();
         }
+        for (Channel channel: mBinder.getService().getClient(mSession).getChannelList()) {
+            mChannels.add(channel);
+        }
+        mChannels.add(new TargetItem(getString(R.string.pickChannel_newChannel)));
+        // Populate list
+        TargetListAdapter listAdapter = new TargetListAdapter(this, mChannels);
+        mTargetList.setAdapter(listAdapter);
+        listAdapter.notifyDataSetChanged();
     }
 
     /* Target list clicks */
@@ -164,14 +185,25 @@ public class PickChannelActivity extends AppCompatActivity implements ServiceCon
         return true;
     }
 
-    /* Get list of channel names available */
-    public List<TargetItem> getChannelNames() {
-        Log.d(ID, "Getting list of channels");
-        List<TargetItem> channels = new ArrayList<TargetItem>();
-        for(Channel channel: mBinder.getService().getClient(mSession).getChannelList()) {
-            channels.add(channel);
+    private void getChannelsFromService() {
+        new Thread() {
+            @Override
+            public void run() {
+                mBinder.getService().getClient(mSession).listChannels();
+            }
+        }.start();
+    }
+
+    /* Non-implemented receiver */
+    public void onStatusCheck() {
+    }
+
+    /* We only use this for getting channels */
+    public void onStatusMessage(Bundle args) {
+        int type = args.getInt(Server.MESSAGE_TYPE);
+        if (type == Server.MESSAGE_CHANNELS) {
+            /* We have received the message, so we can update the channel list */
+            populateTargetList();
         }
-        channels.add(new TargetItem(getString(R.string.pickChannel_newChannel)));
-        return channels;
     }
 }

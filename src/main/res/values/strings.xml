@@ -49,7 +49,7 @@
     <string name="preference_nickname">Nickname</string>
     <string name="preference_name">Name</string>
     <string name="preference_version">Version</string>
-    <string name="preference_url">Source code URL</string>
+    <string name="preference_url">Source code</string>
     <string name="preference_license">License</string>
     <!-- Navigation -->
     <string name="navigation_username">%1$s (%2$s)</string>

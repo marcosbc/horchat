@@ -180,14 +180,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Session session = null;
         String tuples[] = {"rowid", "username", "realName", "nickname", "host", "port", "password"};
         SQLiteDatabase db = getReadableDatabase();
+        String selection = "rowid = ?";
+        String[] selectionArgs = { String.valueOf(id) };
         Log.d(ID, "checking db");
         if (db != null) {
             Log.d(ID, "db is not null");
             if (id > 0) {
                 Log.d(ID, "Creating Session object");
                 // Search for the current session
-                Cursor cursor = db.query(TABLE_SESSIONS, tuples, "rowid = '" + id + "'",
-                        null, null, null, null, null);
+                Cursor cursor = db.query(TABLE_SESSIONS, tuples, selection, selectionArgs, null,
+                        null, null, null);
                 session = new Session(cursor);
                 cursor.close();
             }
@@ -214,8 +216,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             SQLiteDatabase db = getWritableDatabase();
             if (db != null) {
                 Log.d(ID, "Inserting session to db");
-                long userId = db.insert(TABLE_SESSIONS, null, row);
-                Log.d(ID, "value of id: " + userId);
+                long userId = db.insertWithOnConflict(TABLE_SESSIONS, null, row,
+                        SQLiteDatabase.CONFLICT_REPLACE);
+                Log.d(ID, "Session id: " + userId);
                 session = getSession(userId);
                 db.close();
             }
@@ -237,11 +240,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     /* Called upon logout */
     public void logout() {
-        Log.d(ID, "logging out...");
-        Log.d(ID, "SESSION: " + ID_CURRENT_SESSION + ": " + this.getSetting(ID_CURRENT_SESSION));
+        Log.d(ID, "Logging out...");
         if (this.getSetting(ID_CURRENT_SESSION) != null) {
             SQLiteDatabase db = getWritableDatabase();
-            db.delete(TABLE_SETTINGS, "key = '" + ID_CURRENT_SESSION + "'", null);
+            // Delete current session setting
+            db.delete(TABLE_SETTINGS, "key = ?", new String[] { ID_CURRENT_SESSION });
+            // Delete session entry
+            db.delete(TABLE_SESSIONS, "rowid = ?", new String[] { ID_CURRENT_SESSION });
             db.close();
         }
     }
