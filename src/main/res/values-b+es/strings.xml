@@ -1,0 +1,85 @@
+<resources>
+    <string name="app_name">Horchat</string>
+    <string name="app_url">https://github.com/marcosbc/horchat</string>
+    <string name="app_license">GNU GPLv2</string>
+    <string name="app_license_url">https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html</string>
+    <!-- Placeholders (to be replaced) -->
+    <string name="placeholder_title">Horchat</string>
+    <string name="placeholder_username">_USUARIO_</string>
+    <string name="placeholder_item">_OBJETO_</string>
+    <string name="placeholder_text">_TEXTO_</string>
+    <string name="placeholder_date">_FECHA_</string>
+    <string name="placeholder_closeConversation">_CERRAR_</string>
+    <string name="placeholder_version">_VERSIÓN_</string>
+    <!-- Toolbar -->
+    <string name="toolbar_search">Búsqueda</string>
+    <string name="toolbar_options">Menú</string>
+    <string name="toolbar_settings">Ajustes</string>
+    <string name="toolbar_logout">Cerrar sesión</string>
+    <!-- Menu -->
+    <string name="menu_leaveChannel">Salir del canal</string>
+    <string name="menu_closePrivateConversation">Cerrar conversación</string>
+    <!-- Connect to server activity -->
+    <string name="connectToServer_title">Conexión a un servidor</string>
+    <string name="connectToServer_next">Siguiente</string>
+    <string name="connectToServer_serverHost">Host</string>
+    <string name="connectToServer_serverPort">Puerto</string>
+    <string name="connectToServer_serverPassword">Contraseña</string>
+    <string name="connectToServer_username">Usuario</string>
+    <string name="connectToServer_realName">Nombre real</string>
+    <string name="connectToServer_nickname">Apodo</string>
+    <string name="connectToServer_connect">Conectar</string>
+    <string name="connectToServer_eUnknown">Ocurrió una excepción desconocida</string>
+    <string name="connectToServer_eHostNotValid">Por favor, compruebe el host</string>
+    <string name="connectToServer_ePortRange">Por favor, compruebe el puerto</string>
+    <string name="connectToServer_ePortNotInt">No se pudo procesar el puerto</string>
+    <string name="connectToServer_eUsernameEmpty">El campo de nombre de usuario no puede estar vacío</string>
+    <string name="connectToServer_eRealNameEmpty">El campo de nombre real no puede estar vacío</string>
+    <string name="connectToServer_eNicknameEmpty">El campo de apodo no puede estar vacío</string>
+    <string name="connectToServer_eNicknameLength">La longitud del apodo no es válida</string>
+    <!-- Dropdown menu -->
+    <string name="dropdown_settings">Ajustes</string>
+    <!-- Toast messages -->
+    <string name="toast_logout">Has cerrado sesión con éxito</string>
+    <string name="toast_newChannel">El nombre del canal no es válido</string>
+    <string name="toast_notOpenConversation">No se pudo abrir la conversación</string>
+    <!-- Settings/preferences -->
+    <string name="preference_title">Ajustes</string>
+    <string name="preference_about">Sobre Horchat</string>
+    <string name="preference_nickname">Apodo</string>
+    <string name="preference_name">Nombre de la aplicación</string>
+    <string name="preference_version">Versión</string>
+    <string name="preference_url">Código fuente</string>
+    <string name="preference_license">Licencia</string>
+    <!-- Navigation -->
+    <string name="navigation_username">%1$s (%2$s)</string>
+    <string name="navigation_joinChannel">Unión a un canal</string>
+    <string name="navigation_channels">Canales</string>
+    <string name="navigation_sendPrivateMessage">Nuevo mensaje privado</string>
+    <string name="navigation_pms">Mensajes privados</string>
+    <!-- Dialogs -->
+    <string name="pickChannel_title">Elegir un canal</string>
+    <string name="pickChannel_newChannel">Crear un nuevo canal</string>
+    <string name="pickChannel_newChannel_title">Crear un nuevo canal</string>
+    <string name="pickChannel_newChannel_hint">Título</string>
+    <string name="pickChannel_newChannel_create">Crear</string>
+    <string name="pickChannel_newChannel_cancel">Cancelar</string>
+    <string name="pickChannel_joined">Te has unido al canal</string>
+    <string name="pickChannel_notJoined">No pudiste unirte al canal</string>
+    <string name="pickUser_title">Nuevo mensaje privado</string>
+    <string name="pickUser_hint">Usuario</string>
+    <string name="pickUser_choose">Ir</string>
+    <string name="pickUser_cancel">Cancelar</string>
+    <string name="userDisconnect_title">Desconectado del servidor</string>
+    <string name="userDisconnect_message">Has sido desconectado de %1$s.</string>
+    <!-- Conversation -->
+    <string name="conversation_message">Mensaje</string>
+    <!-- Server message types -->
+    <string name="status_connecting">Conectectando a %1$s...</string>
+    <string name="status_connected">Conectado a %1$s.</string>
+    <string name="status_disconnected">Desconectado de %1$s.</string>
+    <string name="status_join">%1$s se unió a %2$s.</string>
+    <string name="status_leave">%1$s salió de %2$s.</string>
+    <string name="status_kick">%1$s fue echado de %2$s.</string>
+    <string name="status_quit">%1$s se desconectó de %2$s.</string>
+</resources>
