@@ -50,7 +50,6 @@ public class IRCClient extends PircBot {
     public void onConnect() {
         Log.d(ID, "IRCClient::onConnect called");
         Server server = mSession.getServer();
-        server.setStatus(Server.STATUS_CONNECTED);
         server.setAllowReconnection(true);
         // Send a server update
         Intent serverIntent = IRCBroadcastHandler

@@ -60,6 +60,7 @@ public class UserCredentialsFragment extends Fragment {
         // Clear the navigation stack and start the new activity
         // TODO: Check use of android:noHistory in Manifest
         activityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        activityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(activityIntent);
         // TODO: Check effect of uncommenting line

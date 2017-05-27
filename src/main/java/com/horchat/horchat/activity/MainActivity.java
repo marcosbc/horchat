@@ -74,9 +74,8 @@ public class MainActivity extends AppCompatActivity
     private SessionReceiver mSessionReceiver;
     private ConversationReceiver mConversationReceiver;
     private String mCurrentConversation;
-    private boolean mChannelsJoined;
-
     private IRCBinder mBinder;
+    private boolean isConnected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,7 +144,7 @@ public class MainActivity extends AppCompatActivity
         TextView username = (TextView) drawerHeader.findViewById(R.id.navigation_username);
         username.setText(getString(R.string.navigation_username,
                 mSession.getAccount().getNickname(), mSession.getAccount().getUsername()));
-        mChannelsJoined = false;
+        isConnected = false;
     }
 
     @Override
@@ -156,8 +155,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onStop() {
         super.onStop();
-        // Unbind from the service
-        //mServiceConnection.onServiceDisconnected(null);
     }
 
     @Override
@@ -430,6 +427,26 @@ public class MainActivity extends AppCompatActivity
         populateDrawer();
     }
 
+    /* Dialog for when a user has been disconnected from the server */
+    private void userDisconnectDialog() {
+        LayoutInflater inflater = getLayoutInflater();
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder
+                .setTitle(R.string.userDisconnect_title)
+                .setMessage(getString(R.string.userDisconnect_message,
+                        mSession.getServer().getHost()))
+                .setCancelable(false)
+                .setNeutralButton(getString(android.R.string.ok),
+                        new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                        logout();
+                    }
+                });
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
     /* Dialog for choosing a username */
     public void pickUserDialog() {
         LayoutInflater inflater = getLayoutInflater();
@@ -521,7 +538,15 @@ public class MainActivity extends AppCompatActivity
             // TODO: Add server disconnection logic
             mSession.getServer().setAllowReconnection(false);
         }
-        //mBinder.getService().getClient().disconnect();
+        /* Disconnect from the server */
+        new Thread() {
+            @Override
+            public void run() {
+                if (mBinder != null) {
+                    mBinder.getService().getClient(mSession).disconnect();
+                }
+            }
+        }.start();
         Intent ircServiceIntent = new Intent(this, IRCService.class);
         stopService(ircServiceIntent);
         /* Start the activity */
@@ -633,14 +658,21 @@ public class MainActivity extends AppCompatActivity
         if (server.isConnected()) {
             // Connection is OK
             Log.d(ID, "Server is OK");
+            isConnected = true;
         } else {
             // Connection was lost
             // TODO: Add logic for enabling reconnection
             Log.d(ID, "Server is DOWN");
+            if (isConnected) {
+                /* User was previously connected */
+                userDisconnectDialog();
+            }
+            isConnected = false;
         }
     }
 
     public void onStatusMessage(Bundle args) {
+        Server server = mSession.getServer();
         /* Parse any server message */
         int type = args.getInt(Server.MESSAGE_TYPE);
         String msg = null;
@@ -650,13 +682,17 @@ public class MainActivity extends AppCompatActivity
             case Server.MESSAGE_CONNECTING:
                 msg = getString(R.string.status_connecting,
                         mSession.getServerConversation().getName());
+                server.setStatus(Server.STATUS_CONNECTING);
                 break;
             case Server.MESSAGE_CONNECTED:
                 msg = getString(R.string.status_connected,
                         mSession.getServerConversation().getName());
+                server.setStatus(Server.STATUS_CONNECTED);
                 break;
             case Server.MESSAGE_DISCONNECTED:
-                msg = getString(R.string.status_quit);
+                msg = getString(R.string.status_disconnected,
+                        mSession.getServerConversation().getName());
+                server.setStatus(Server.STATUS_DISCONNECTED);
                 break;
             case Server.MESSAGE_JOIN:
                 user = args.getString(Conversation.SENDER);

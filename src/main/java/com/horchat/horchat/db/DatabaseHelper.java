@@ -22,7 +22,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String ID = "horchat";
     /* Database configuration */
     private static final String DB_NAME              = "horchat";
-    private static final int DB_VERSION              = 2;
+    private static final int DB_VERSION              = 1;
     /* Table names */
     private static final String TABLE_SESSIONS       = "sessions";
     private static final String TABLE_SETTINGS       = "settings";
@@ -115,7 +115,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private Settings getSettings() {
         SQLiteDatabase db = getReadableDatabase();
         String tuples[] = {"key", "value"};
-        String whereClause = "sid = ?";
+        String whereClause = "sid = ? OR sid = \"0\"";
         String[] whereArgs = { String.valueOf(mSessionId) };
         Cursor cursor = db.query(TABLE_SETTINGS, tuples, whereClause, whereArgs, null, null, null,
                 null);
@@ -237,6 +237,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     /* Called upon logout */
     public void logout() {
+        Log.d(ID, "logging out...");
+        Log.d(ID, "SESSION: " + ID_CURRENT_SESSION + ": " + this.getSetting(ID_CURRENT_SESSION));
         if (this.getSetting(ID_CURRENT_SESSION) != null) {
             SQLiteDatabase db = getWritableDatabase();
             db.delete(TABLE_SETTINGS, "key = '" + ID_CURRENT_SESSION + "'", null);

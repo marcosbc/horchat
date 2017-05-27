@@ -15,10 +15,12 @@ public class SessionReceiver extends BroadcastReceiver {
     }
 
     public void onReceive(Context context, Intent intent) {
-        mListener.onStatusCheck();
+        /* Parse server messages */
         Bundle args = intent.getExtras();
         if (args != null) {
             mListener.onStatusMessage(args);
         }
+        /* Call status check */
+        mListener.onStatusCheck();
     }
 }

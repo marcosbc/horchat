@@ -105,6 +105,7 @@ public class IRCService extends Service {
                             .createServerIntent(IRCBroadcastHandler.SERVER_UPDATE);
                     serverIntent.putExtra(Server.MESSAGE_TYPE, Server.MESSAGE_CONNECTING);
                     service.sendBroadcast(serverIntent);
+                    Log.d("horchat", "connecting...");
                     // Connect to the server
                     client.connect(server.getHost(), server.getPort(), serverPassword);
                     /* We will store the list of channels later */

@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Horchat</string>
     <string name="app_url">https://github.com/marcosbc/horchat</string>
-    <string name="app_license_url">https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html</string>
     <string name="app_license">GNU GPLv2</string>
+    <string name="app_license_url">https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html</string>
     <!-- Placeholders (to be replaced) -->
     <string name="placeholder_title">Horchat</string>
     <string name="placeholder_username">_USERNAME_</string>
@@ -57,6 +57,7 @@
     <string name="navigation_channels">Channels</string>
     <string name="navigation_sendPrivateMessage">New private conversation</string>
     <string name="navigation_pms">Private conversations</string>
+    <!-- Dialogs -->
     <string name="pickChannel_title">Pick a channel</string>
     <string name="pickChannel_newChannel">Create a new channel</string>
     <string name="pickChannel_newChannel_title">Create a new channel</string>
@@ -69,6 +70,8 @@
     <string name="pickUser_hint">Username</string>
     <string name="pickUser_choose">Go</string>
     <string name="pickUser_cancel">Cancel</string>
+    <string name="userDisconnect_title">Disconnected from server</string>
+    <string name="userDisconnect_message">You have been disconnected from %1$s.</string>
     <!-- Conversation -->
     <string name="conversation_message">Message</string>
     <!-- TODO: Remove or change this placeholder text -->
@@ -76,7 +79,7 @@
     <!-- Server message types -->
     <string name="status_connecting">Connecting to %1$s...</string>
     <string name="status_connected">Connected to %1$s.</string>
-    <string name="status_disconnected">Disconnected from %2$s.</string>
+    <string name="status_disconnected">Disconnected from %1$s.</string>
     <string name="status_join">%1$s joined %2$s.</string>
     <string name="status_leave">%1$s left %2$s.</string>
     <string name="status_kick">%1$s was kicked from %2$s.</string>
