@@ -29,6 +29,15 @@ public class AccountValidationException extends Exception {
             case Account.E_NICKNAMELENGTH:
                 stringResourceId = R.string.connectToServer_eNicknameLength;
                 break;
+            case Account.E_USERNAMEFORMAT:
+                stringResourceId = R.string.connectToServer_eUsernameFormat;
+                break;
+            case Account.E_REALNAMEFORMAT:
+                stringResourceId = R.string.connectToServer_eRealnameFormat;
+                break;
+            case Account.E_NICKNAMEFORMAT:
+                stringResourceId = R.string.connectToServer_eNicknameFormat;
+                break;
             default:
                 stringResourceId = R.string.connectToServer_eUnknown;
         }

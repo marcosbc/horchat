@@ -37,6 +37,9 @@
     <string name="connectToServer_eRealNameEmpty">El campo de nombre real no puede estar vacío</string>
     <string name="connectToServer_eNicknameEmpty">El campo de apodo no puede estar vacío</string>
     <string name="connectToServer_eNicknameLength">La longitud del apodo no es válida</string>
+    <string name="connectToServer_eUsernameFormat">El nombre de usuario no es válido</string>
+    <string name="connectToServer_eRealnameFormat">El nombre real no es válido</string>
+    <string name="connectToServer_eNicknameFormat">El apodo no es válido</string>
     <!-- Dropdown menu -->
     <string name="dropdown_settings">Ajustes</string>
     <!-- Toast messages -->

@@ -37,6 +37,9 @@
     <string name="connectToServer_eRealNameEmpty">The real name field cannot be empty</string>
     <string name="connectToServer_eNicknameEmpty">The nickname field cannot be empty</string>
     <string name="connectToServer_eNicknameLength">The nickname length is not valid</string>
+    <string name="connectToServer_eUsernameFormat">The username is not valid</string>
+    <string name="connectToServer_eRealnameFormat">The real name is not valid</string>
+    <string name="connectToServer_eNicknameFormat">The nickname is not valid</string>
     <!-- Dropdown menu -->
     <string name="dropdown_settings">Settings</string>
     <!-- Toast messages -->
