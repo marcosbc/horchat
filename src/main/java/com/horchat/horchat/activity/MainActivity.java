@@ -170,7 +170,6 @@ public class MainActivity extends AppCompatActivity
         registerReceiver(mConversationReceiver, new IntentFilter(IRCBroadcastHandler.CONVERSATION_REMOVE));
         // Bind to the IRC service
         Intent ircServiceIntent = new Intent(this, IRCService.class);
-        ircServiceIntent.setAction(IRCService.ACTION_FOREGROUND);
         startService(ircServiceIntent);
         bindService(ircServiceIntent, this, 0);
     }

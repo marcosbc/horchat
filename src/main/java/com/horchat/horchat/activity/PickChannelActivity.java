@@ -87,7 +87,6 @@ public class PickChannelActivity extends AppCompatActivity implements ServiceCon
         registerReceiver(mSessionReceiver, new IntentFilter(IRCBroadcastHandler.SERVER_UPDATE));
         // Bind to the IRC service
         Intent ircServiceIntent = new Intent(this, IRCService.class);
-        ircServiceIntent.setAction(IRCService.ACTION_BACKGROUND);
         startService(ircServiceIntent);
         bindService(ircServiceIntent, this, 0);
     }

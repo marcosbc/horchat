@@ -4,7 +4,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.util.Log;
 
-import com.horchat.horchat.db.DatabaseHelper;
 import com.horchat.horchat.model.Account;
 import com.horchat.horchat.model.Conversation;
 import com.horchat.horchat.model.Server;
@@ -13,7 +12,6 @@ import com.horchat.horchat.model.Session;
 import org.jibble.pircbot.IrcException;
 import org.jibble.pircbot.NickAlreadyInUseException;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,25 +19,20 @@ import java.util.Map;
 public class IRCService extends Service {
     public static final String ID = "horchat";
 
-    public static final String ACTION_BACKGROUND = "IRCService__background";
-    public static final String ACTION_FOREGROUND = "IRCService__foreground";
-
     private final IRCBinder mBinder;
     private Server mServer = null;
     private Map<Long, IRCClient> mConnections;
-    private List<Session> mSessionList;
     private List<Conversation> mAutoJoinChannels;
 
     public IRCService() {
         mBinder = new IRCBinder(this);
-        mSessionList = new ArrayList<Session>();
         mConnections = new HashMap<Long, IRCClient>();
     }
     @Override
     public void onCreate() {
         super.onCreate();
-        sendBroadcast(new Intent(IRCBroadcastHandler.SERVER_UPDATE));
         Log.d(ID, "Service onCreate called");
+        sendBroadcast(new Intent(IRCBroadcastHandler.SERVER_UPDATE));
     }
     @Override
     public IRCBinder onBind(Intent intent) {
@@ -60,6 +53,7 @@ public class IRCService extends Service {
         // TODO: Implement
     }
     public synchronized IRCClient getClient(Session session) {
+        // TODO: Support multiple sessions at once
         long sessionId = session.getId();
         IRCClient client = mConnections.get(sessionId);
         if (client == null) {
@@ -75,7 +69,7 @@ public class IRCService extends Service {
         return mAutoJoinChannels;
     }
     public void connect(final Session session) {
-        Log.d("horchat", "Service connect called");
+        Log.d(ID, "Service connect called");
         final long sessionId = session.getId();
         final IRCService service = this;
         new Thread() {
