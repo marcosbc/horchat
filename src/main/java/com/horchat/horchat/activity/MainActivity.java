@@ -86,16 +86,9 @@ public class MainActivity extends AppCompatActivity
         // Configure toolbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
-        // Configure navigation drawer
-        /*
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override public boolean onNavigationItemSelected(MenuItem menuItem) {
-                return true;
-            }
-        });
-        */
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_nav_menu);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mToolbar.setPadding(0, getStatusBarHeight(), 0, 0);
         // Setup the database handler
         mDb = new DatabaseHelper(this);
         // Setup the session if it wasn't defined yet
@@ -328,6 +321,16 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    // A method to find height of the status bar
+    public int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
+
     /* Populate navigation drawer */
     private void populateDrawer() {
         LayoutInflater inflater = getLayoutInflater();
@@ -554,6 +557,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void sendMessage(final String text) {
+        if (text == null || text.equals("")) {
+            return;
+        }
         Conversation conversation = mSession.getCurrentConversation();
         if (conversation != null && conversation != mSession.getServerConversation()) {
             String sender = mSession.getAccount().getNickname();

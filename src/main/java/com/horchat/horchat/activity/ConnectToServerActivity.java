@@ -23,6 +23,7 @@ public class ConnectToServerActivity extends AppCompatActivity {
         // Configure toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        toolbar.setPadding(0, getStatusBarHeight(), 0, 0);
         // Workaround not to show the title
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         /* Configure fragment container */
@@ -36,5 +37,15 @@ public class ConnectToServerActivity extends AppCompatActivity {
         /* Add fragment to the FrameLayout */
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.connect_frame, serverCredentialsFragment).commit();
+    }
+
+    // A method to find height of the status bar
+    public int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
     }
 }

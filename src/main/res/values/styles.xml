@@ -1,14 +1,23 @@
 <resources>
     <!-- Base application theme -->
     <style name="Horchat" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="preferenceTheme">@style/Horchat.PreferenceOverlay</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <!-- <item name="android:windowTranslucentNavigation">true</item> -->
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:actionBarStyle">@style/Horchat.ActionBar</item>
+        <item name="android:homeAsUpIndicator">@drawable/ic_action_arrow_back</item>
     </style>
 
-    <style name="Horchat.ActionBar" parent="Theme.AppCompat.Light"></style>
+    <style name="Horchat.ActionBar" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:textColorPrimary">@color/colorPrimaryText</item>
+        <item name="android:textColorSecondary">@color/colorSecondaryText</item>
+    </style>
 
-    <style name="Horchat.ActionBar.Popup" parent="ThemeOverlay.AppCompat.Light"></style>
+    <style name="Horchat.ActionBar.Popup" parent="ThemeOverlay.AppCompat.Light">
+    </style>
 
     <style name="Horchat.ActionBar.LargeTitle" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
         <item name="android:textSize">24sp</item>

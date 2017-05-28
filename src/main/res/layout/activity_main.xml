@@ -6,25 +6,17 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context=".activity.MainActivity">
+    android:fitsSystemWindows="false"
+    tools:context=".activity.MainActivity"
+    android:background="@color/colorBackground">
 
     <!-- Chat layout -->
     <include layout="@layout/content_layout"/>
 
     <!-- Navigation drawer -->
-    <!--<android.support.design.widget.NavigationView
-        android:id="@+id/navigation_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        android:layout_gravity="start"
-        app:headerLayout="@layout/navigation_header"
-        app:menu="@menu/navigation"/>-->
     <android.support.design.internal.ScrimInsetsFrameLayout
         android:layout_width="320dp"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
         android:layout_gravity="start">
         <include layout="@layout/navigation_drawer"/>
     </android.support.design.internal.ScrimInsetsFrameLayout>

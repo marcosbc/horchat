@@ -21,6 +21,7 @@ public class SettingsActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setPadding(0, getStatusBarHeight(), 0, 0);
         Fragment fragment = null;
         // Get intent action
         Intent intent = getIntent();
@@ -37,8 +38,19 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     /* Make the Home/Up button work the same way as the Back button */
+    @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
+    }
+
+    // A method to find height of the status bar
+    public int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
     }
 }

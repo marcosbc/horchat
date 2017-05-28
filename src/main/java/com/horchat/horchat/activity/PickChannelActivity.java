@@ -58,6 +58,7 @@ public class PickChannelActivity extends AppCompatActivity implements ServiceCon
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setPadding(0, getStatusBarHeight(), 0, 0);
         // Configure layout
         mTargetList = (ListView) findViewById(R.id.target_list);
         mTargetList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -99,6 +100,7 @@ public class PickChannelActivity extends AppCompatActivity implements ServiceCon
         unregisterReceiver(mSessionReceiver);
     }
 
+    @Override
     public void onServiceConnected(ComponentName name, IBinder binder) {
         mBinder = (IRCBinder) binder;
         // Populate target list
@@ -106,8 +108,19 @@ public class PickChannelActivity extends AppCompatActivity implements ServiceCon
         populateTargetList();
     }
 
+    @Override
     public void onServiceDisconnected(ComponentName name) {
         mBinder = null;
+    }
+
+    // A method to find height of the status bar
+    public int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
     }
 
     /* Populates the target list */

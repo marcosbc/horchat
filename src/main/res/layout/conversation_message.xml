@@ -16,7 +16,7 @@
         android:text="@string/placeholder_username"
         android:textStyle="bold"
         android:textSize="18dp"
-        android:textColor="@android:color/black"/>
+        android:textColor="@color/colorPrimaryText"/>
 
     <TextView
         android:id="@+id/conversation_message_date"
@@ -25,7 +25,7 @@
         android:text="@string/placeholder_date"
         android:textStyle="bold"
         android:textSize="18dp"
-        android:textColor="@android:color/darker_gray"/>
+        android:textColor="@color/colorSecondaryText"/>
 
     <TextView
         android:id="@+id/conversation_message_text"
@@ -34,6 +34,6 @@
         android:text="@string/placeholder_text"
         android:textStyle="normal"
         android:textSize="18dp"
-        android:textColor="@android:color/darker_gray"/>
+        android:textColor="@color/colorPrimaryText"/>
 
 </LinearLayout>

@@ -10,20 +10,22 @@
 
     <!-- Toolbar configurations -->
     <android.support.v7.widget.Toolbar
+        app:title="@string/placeholder_title"
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
+        android:layout_height="wrap_content"
         android:elevation="4dp"
         android:theme="@style/Horchat.ActionBar"
-        app:title="@string/placeholder_title"
-        app:popupTheme="@style/Horchat.ActionBar.Popup"/>
+        app:popupTheme="@style/Horchat.ActionBar.Popup"
+        android:background="@color/colorPrimary"
+        android:titleTextColor="@color/colorPrimaryText"/>
 
     <!-- The rest of the UI will be based on Fragments -->
     <FrameLayout
         android:id="@+id/content"
         android:layout_below="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:background="@color/colorBackground"/>
 
 </RelativeLayout>
