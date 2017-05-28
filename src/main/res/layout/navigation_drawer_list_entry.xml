@@ -11,6 +11,7 @@
         android:text="@string/placeholder_item"
         android:id="@+id/list_item_entry_text"
         android:textStyle="normal"
+        android:textColor="@color/colorPrimaryText"
         android:textSize="18dp"
         android:layout_marginLeft="20dp"/>
 </RelativeLayout>

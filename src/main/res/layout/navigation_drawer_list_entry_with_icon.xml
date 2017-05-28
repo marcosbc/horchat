@@ -18,6 +18,7 @@
         android:layout_toRightOf="@id/list_item_entry_icon"
         android:textStyle="normal"
         android:layout_centerVertical="true"
+        android:textColor="@color/colorPrimaryText"
         android:textSize="18dp"
         android:layout_marginLeft="16dp"/>
 </RelativeLayout>

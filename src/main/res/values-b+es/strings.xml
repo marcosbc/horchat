@@ -78,7 +78,7 @@
     <!-- Conversation -->
     <string name="conversation_message">Mensaje</string>
     <!-- Server message types -->
-    <string name="status_connecting">Conectectando a %1$s...</string>
+    <string name="status_connecting">Conectando con %1$s...</string>
     <string name="status_connected">Conectado a %1$s.</string>
     <string name="status_disconnected">Desconectado de %1$s.</string>
     <string name="status_join">%1$s se unió a %2$s.</string>

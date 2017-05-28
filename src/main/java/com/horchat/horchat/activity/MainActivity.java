@@ -241,23 +241,25 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         invalidateOptionsMenu();
-        Conversation currentConversation = mSession.getCurrentConversation();
-        /* Make "Close Conversation" button non-visible by default */
-        MenuItem item = menu.findItem(R.id.action_closeConversation);
-        item.setVisible(false);
-        if (currentConversation != null) {
-            int titleRes = 0;
-            /* Add "Close Channel" if a Channel is the current conversation */
-            if (currentConversation.getType() == Conversation.TYPE_CHANNEL) {
-                titleRes = R.string.menu_leaveChannel;
-            }
-            /* Add "Close Conversation" if a Private Conversation is the current conversation */
-            else if (currentConversation.getType() == Conversation.TYPE_USER) {
-                titleRes = R.string.menu_closePrivateConversation;
-            }
-            if (titleRes != 0) {
-                item.setTitle(titleRes);
-                item.setVisible(true);
+        if (mSession != null) {
+            Conversation currentConversation = mSession.getCurrentConversation();
+            /* Make "Close Conversation" button non-visible by default */
+            MenuItem item = menu.findItem(R.id.action_closeConversation);
+            item.setVisible(false);
+            if (currentConversation != null) {
+                int titleRes = 0;
+                /* Add "Close Channel" if a Channel is the current conversation */
+                if (currentConversation.getType() == Conversation.TYPE_CHANNEL) {
+                    titleRes = R.string.menu_leaveChannel;
+                }
+                /* Add "Close Conversation" if a Private Conversation is the current conversation */
+                else if (currentConversation.getType() == Conversation.TYPE_USER) {
+                    titleRes = R.string.menu_closePrivateConversation;
+                }
+                if (titleRes != 0) {
+                    item.setTitle(titleRes);
+                    item.setVisible(true);
+                }
             }
         }
         return super.onPrepareOptionsMenu(menu);
