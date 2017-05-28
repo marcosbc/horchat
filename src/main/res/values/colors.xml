@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--
-    <color name="colorPrimary">#F5EBC5</color>
-    <color name="colorPrimaryDark">#81541F</color>
-    <color name="colorAccent">#A7977C</color>
-    -->
     <color name="colorPrimary">#CEC2AD</color>
     <color name="colorPrimaryText">#655E58</color>
     <color name="colorSecondary">#CEC2AD</color>
     <color name="colorSecondaryText">#9C958E</color>
     <color name="colorBackground">#F4F0EC</color>
     <color name="colorAccent">#A7977C</color>
+    <color name="drawerSeparator">#CCCCCC</color>
 </resources>
