@@ -22,6 +22,7 @@ import java.util.TreeSet;
 
 public class IRCClient extends PircBot {
     private static final String ID = "horchat";
+    private static final int MAX_CHANNEL_LIST = 100;
 
     private final IRCService mService;
     private final Session mSession;
@@ -89,6 +90,10 @@ public class IRCClient extends PircBot {
     }
     @Override
     protected void onChannelInfo(String channel, int userCount, String topic) {
+        if (mChannelList.size() > MAX_CHANNEL_LIST) {
+            // Freenode and other servers have way too many channels...
+            return;
+        }
         Log.d(ID, "Called onChannelInfo: " + channel + ", " + userCount + ", " + topic);
         Channel previousChannel = mChannelList.get(channel);
         Channel newChannel = new Channel(channel);
